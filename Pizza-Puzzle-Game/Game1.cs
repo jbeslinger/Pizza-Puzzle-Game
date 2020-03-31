@@ -9,6 +9,7 @@ namespace Pizza_Puzzle_Game
     /// </summary>
     public class Game1 : Game
     {
+        Texture2D peachTexture;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         
@@ -41,6 +42,7 @@ namespace Pizza_Puzzle_Game
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            peachTexture = Content.Load<Texture2D>("peach");
         }
 
         /// <summary>
@@ -76,6 +78,9 @@ namespace Pizza_Puzzle_Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            spriteBatch.Draw(peachTexture, new Vector2(0, 0), Color.White);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
