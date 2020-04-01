@@ -9,12 +9,41 @@ namespace Pizza_Puzzle_Game
     /// </summary>
     public class Game1 : Game
     {
+        #region Constants
+        const float PPU = 8.0f;
+        #endregion
+
+        #region Enums
+        enum PlayerPosition { LEFT = 0, MIDDLE = 1, RIGHT = 2 };
+        #endregion
+
+        #region Textures & Graphics
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
+
+        Texture2D maketableTex;
+        Texture2D pizzaPanTex;
+        Texture2D playerArrowsTex;
+        #endregion
+
+        #region Game Variables
+        Vector2[] panPositions =
+            { new Vector2(PPU * 4, PPU * 21),
+              new Vector2(PPU * 7, PPU * 21),
+              new Vector2(PPU * 10, PPU * 21),
+              new Vector2(PPU * 13, PPU * 21) };
+
+        PlayerPosition playerPos = PlayerPosition.MIDDLE; // Based on the index of the panPositions variable
+        #endregion
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+
+            graphics.PreferredBackBufferWidth = (int)PPU * 19;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferHeight = (int)PPU * 26;   // set this value to the desired height of your window
+            graphics.ApplyChanges();
+
             Content.RootDirectory = "Content";
         }
 
@@ -41,6 +70,9 @@ namespace Pizza_Puzzle_Game
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            maketableTex = Content.Load<Texture2D>("maketable");
+            pizzaPanTex = Content.Load<Texture2D>("pan");
+            playerArrowsTex = Content.Load<Texture2D>("arrows");
         }
 
         /// <summary>
@@ -59,11 +91,15 @@ namespace Pizza_Puzzle_Game
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            Keyboard.GetState();
+            if (Keyboard.HasBeenPressed(Keys.Escape))
                 Exit();
 
             // TODO: Add your update logic here
-            var kstate = Keyboard.GetState();
+            if (Keyboard.HasBeenPressed(Keys.Left) && playerPos != (PlayerPosition)0)
+                playerPos--;
+            else if (Keyboard.HasBeenPressed(Keys.Right) && playerPos != (PlayerPosition)2)
+                playerPos++;
 
             base.Update(gameTime);
         }
@@ -79,7 +115,28 @@ namespace Pizza_Puzzle_Game
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
+            spriteBatch.Draw(maketableTex, new Vector2(PPU * 2, PPU * 2), Color.White);
 
+            foreach (Vector2 pan in panPositions)
+            {
+                spriteBatch.Draw(pizzaPanTex, pan, Color.White);
+            }
+
+            switch (playerPos)
+            {
+                case PlayerPosition.LEFT:
+                    spriteBatch.Draw(playerArrowsTex, panPositions[0], Color.Red);
+                    spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Blue);
+                    break;
+                case PlayerPosition.MIDDLE:
+                    spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Red);
+                    spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Blue);
+                    break;
+                case PlayerPosition.RIGHT:
+                    spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Red);
+                    spriteBatch.Draw(playerArrowsTex, panPositions[3], Color.Blue);
+                    break;
+            }
 
             spriteBatch.End();
 
