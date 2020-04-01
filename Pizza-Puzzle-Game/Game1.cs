@@ -27,6 +27,7 @@ namespace Pizza_Puzzle_Game
         #endregion
 
         #region Game Variables
+        // The pixel coordinates of the pans on the bottom
         Vector2[] panPositions =
             { new Vector2(PPU * 4, PPU * 21),
               new Vector2(PPU * 7, PPU * 21),
@@ -34,6 +35,7 @@ namespace Pizza_Puzzle_Game
               new Vector2(PPU * 13, PPU * 21) };
 
         PlayerPosition playerPos = PlayerPosition.MIDDLE; // Based on the index of the panPositions variable
+        bool playerSwapToggle; // A flag to indicate that the player pressed the swap button
         #endregion
 
         public Game1()
@@ -96,7 +98,9 @@ namespace Pizza_Puzzle_Game
                 Exit();
 
             // TODO: Add your update logic here
-            if (Keyboard.HasBeenPressed(Keys.Left) && playerPos != (PlayerPosition)0)
+            if (Keyboard.HasBeenPressed(Keys.Z))
+                playerSwapToggle = !playerSwapToggle;
+            else if (Keyboard.HasBeenPressed(Keys.Left) && playerPos != (PlayerPosition)0)
                 playerPos--;
             else if (Keyboard.HasBeenPressed(Keys.Right) && playerPos != (PlayerPosition)2)
                 playerPos++;
@@ -125,16 +129,40 @@ namespace Pizza_Puzzle_Game
             switch (playerPos)
             {
                 case PlayerPosition.LEFT:
-                    spriteBatch.Draw(playerArrowsTex, panPositions[0], Color.Red);
-                    spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Blue);
+                    if (playerSwapToggle)
+                    {
+                        spriteBatch.Draw(playerArrowsTex, panPositions[0], Color.Red);
+                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Blue);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(playerArrowsTex, panPositions[0], Color.Blue);
+                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Red);
+                    }
                     break;
                 case PlayerPosition.MIDDLE:
-                    spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Red);
-                    spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Blue);
+                    if (playerSwapToggle)
+                    {
+                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Red);
+                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Blue);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Blue);
+                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Red);
+                    }
                     break;
                 case PlayerPosition.RIGHT:
-                    spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Red);
-                    spriteBatch.Draw(playerArrowsTex, panPositions[3], Color.Blue);
+                    if (playerSwapToggle)
+                    {
+                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Red);
+                        spriteBatch.Draw(playerArrowsTex, panPositions[3], Color.Blue);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Blue);
+                        spriteBatch.Draw(playerArrowsTex, panPositions[3], Color.Red);
+                    }
                     break;
             }
 
