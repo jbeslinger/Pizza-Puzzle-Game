@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Pizza_Puzzle_Game.GameObjects;
+using System.Collections.Generic;
 
 namespace Pizza_Puzzle_Game
 {
@@ -9,41 +11,20 @@ namespace Pizza_Puzzle_Game
     /// </summary>
     public class Game1 : Game
     {
-        #region Constants
-        const float PPU = 8.0f;
-        #endregion
-
-        #region Enums
-        enum PlayerPosition { LEFT = 0, MIDDLE = 1, RIGHT = 2 };
-        #endregion
-
         #region Textures & Graphics
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Texture2D maketableTex;
-        Texture2D pizzaPanTex;
-        Texture2D playerArrowsTex;
-        #endregion
-
-        #region Game Variables
-        // The pixel coordinates of the pans on the bottom
-        Vector2[] panPositions =
-            { new Vector2(PPU * 4, PPU * 21),
-              new Vector2(PPU * 7, PPU * 21),
-              new Vector2(PPU * 10, PPU * 21),
-              new Vector2(PPU * 13, PPU * 21) };
-
-        PlayerPosition playerPos = PlayerPosition.MIDDLE; // Based on the index of the panPositions variable
-        bool playerSwapToggle; // A flag to indicate that the player pressed the swap button
+        List<GameObject> renderables = new List<GameObject>();
+        List<GameObject> updatables = new List<GameObject>();
         #endregion
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
 
-            graphics.PreferredBackBufferWidth = (int)PPU * 19;  // set this value to the desired width of your window
-            graphics.PreferredBackBufferHeight = (int)PPU * 26;   // set this value to the desired height of your window
+            graphics.PreferredBackBufferWidth = (int)Program.PPU * 19;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferHeight = (int)Program.PPU * 26;   // set this value to the desired height of your window
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
@@ -72,9 +53,17 @@ namespace Pizza_Puzzle_Game
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            maketableTex = Content.Load<Texture2D>("maketable");
-            pizzaPanTex = Content.Load<Texture2D>("pan");
-            playerArrowsTex = Content.Load<Texture2D>("arrows");
+            renderables.Add(new MaketableObject(new Vector2(Program.PPU * 2, Program.PPU * 2), Content.Load<Texture2D>("maketable"), Color.White));
+
+            Texture2D pizzaPanTex = Content.Load<Texture2D>("pan");
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 4, Program.PPU * 21), pizzaPanTex, Color.White));
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 7, Program.PPU * 21), pizzaPanTex, Color.White));
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 10, Program.PPU * 21), pizzaPanTex, Color.White));
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 13, Program.PPU * 21), pizzaPanTex, Color.White));
+
+            PlayerObject newPlayer = new PlayerObject(new Vector2(Program.PPU * 9, Program.PPU * 21), Content.Load<Texture2D>("arrows"), Color.White);
+            renderables.Add(newPlayer);
+            updatables.Add(newPlayer);
         }
 
         /// <summary>
@@ -98,12 +87,8 @@ namespace Pizza_Puzzle_Game
                 Exit();
 
             // TODO: Add your update logic here
-            if (Keyboard.HasBeenPressed(Keys.Z))
-                playerSwapToggle = !playerSwapToggle;
-            else if (Keyboard.HasBeenPressed(Keys.Left) && playerPos != (PlayerPosition)0)
-                playerPos--;
-            else if (Keyboard.HasBeenPressed(Keys.Right) && playerPos != (PlayerPosition)2)
-                playerPos++;
+            foreach (GameObject updatable in updatables)
+                updatable.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -119,52 +104,8 @@ namespace Pizza_Puzzle_Game
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            spriteBatch.Draw(maketableTex, new Vector2(PPU * 2, PPU * 2), Color.White);
-
-            foreach (Vector2 pan in panPositions)
-            {
-                spriteBatch.Draw(pizzaPanTex, pan, Color.White);
-            }
-
-            switch (playerPos)
-            {
-                case PlayerPosition.LEFT:
-                    if (playerSwapToggle)
-                    {
-                        spriteBatch.Draw(playerArrowsTex, panPositions[0], Color.Red);
-                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Blue);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(playerArrowsTex, panPositions[0], Color.Blue);
-                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Red);
-                    }
-                    break;
-                case PlayerPosition.MIDDLE:
-                    if (playerSwapToggle)
-                    {
-                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Red);
-                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Blue);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(playerArrowsTex, panPositions[1], Color.Blue);
-                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Red);
-                    }
-                    break;
-                case PlayerPosition.RIGHT:
-                    if (playerSwapToggle)
-                    {
-                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Red);
-                        spriteBatch.Draw(playerArrowsTex, panPositions[3], Color.Blue);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(playerArrowsTex, panPositions[2], Color.Blue);
-                        spriteBatch.Draw(playerArrowsTex, panPositions[3], Color.Red);
-                    }
-                    break;
-            }
+            foreach (GameObject renderable in renderables)
+                renderable.Render(spriteBatch);
 
             spriteBatch.End();
 

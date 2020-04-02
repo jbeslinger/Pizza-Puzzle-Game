@@ -43,7 +43,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
-    <Compile Include="Keyboard.cs" />
+    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameObjects\MaketableObject.cs" />
+    <Compile Include="GameObjects\PanObject.cs" />
+    <Compile Include="GameObjects\PlayerObject.cs" />
+    <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
