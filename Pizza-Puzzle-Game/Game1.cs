@@ -124,7 +124,7 @@ namespace Pizza_Puzzle_Game
             spriteBatch.End();
 
             GraphicsDevice.SetRenderTarget(null);
-            targetBatch.Begin();
+            targetBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
             targetBatch.Draw(target, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
             targetBatch.End();
 
