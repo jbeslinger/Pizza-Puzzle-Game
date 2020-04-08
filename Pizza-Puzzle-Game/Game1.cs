@@ -14,18 +14,30 @@ namespace Pizza_Puzzle_Game
         #region Textures & Graphics
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteBatch targetBatch;
+        RenderTarget2D target;
 
         List<GameObject> renderables = new List<GameObject>();
         List<GameObject> updatables = new List<GameObject>();
+
+        Texture2D backgroundTex;
+        #endregion
+
+        #region Fields
+        private int m_Scale = 3;
         #endregion
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
 
-            graphics.PreferredBackBufferWidth = (int)Program.PPU * 19;  // set this value to the desired width of your window
-            graphics.PreferredBackBufferHeight = (int)Program.PPU * 26;   // set this value to the desired height of your window
+            graphics.PreferredBackBufferWidth = (int)Program.PPU * 19 * m_Scale;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferHeight = (int)Program.PPU * 26 * m_Scale;   // set this value to the desired height of your window
+            graphics.PreferMultiSampling = false;
             graphics.ApplyChanges();
+
+            targetBatch = new SpriteBatch(GraphicsDevice);
+            target = new RenderTarget2D(GraphicsDevice, (int)Program.PPU * 19, (int)Program.PPU * 26);
 
             Content.RootDirectory = "Content";
         }
@@ -53,6 +65,8 @@ namespace Pizza_Puzzle_Game
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            backgroundTex = Content.Load<Texture2D>("bg");
+
             renderables.Add(new MaketableObject(new Vector2(Program.PPU * 2, Program.PPU * 2), Content.Load<Texture2D>("maketable"), Color.White));
 
             Texture2D pizzaPanTex = Content.Load<Texture2D>("pan");
@@ -102,12 +116,17 @@ namespace Pizza_Puzzle_Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            GraphicsDevice.SetRenderTarget(target);
             spriteBatch.Begin();
-
+            spriteBatch.Draw(backgroundTex, new Vector2(0, 0), Color.White);
             foreach (GameObject renderable in renderables)
                 renderable.Render(spriteBatch);
-
             spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+            targetBatch.Begin();
+            targetBatch.Draw(target, new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), Color.White);
+            targetBatch.End();
 
             base.Draw(gameTime);
         }
