@@ -24,20 +24,22 @@ namespace Pizza_Puzzle_Game
         #endregion
 
         #region Fields
-        private int m_Scale = 3;
+        private uint m_Scale = 3;
+        private uint m_ResWidth = (uint)Program.PPU * 32;
+        private uint m_ResHeight = (uint)Program.PPU * 28;
         #endregion
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
 
-            graphics.PreferredBackBufferWidth = (int)Program.PPU * 19 * m_Scale;  // set this value to the desired width of your window
-            graphics.PreferredBackBufferHeight = (int)Program.PPU * 26 * m_Scale;   // set this value to the desired height of your window
+            graphics.PreferredBackBufferWidth = (int)m_ResWidth * (int)m_Scale;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferHeight = (int)m_ResHeight * (int)m_Scale;   // set this value to the desired height of your window
             graphics.PreferMultiSampling = false;
             graphics.ApplyChanges();
 
             targetBatch = new SpriteBatch(GraphicsDevice);
-            target = new RenderTarget2D(GraphicsDevice, (int)Program.PPU * 19, (int)Program.PPU * 26);
+            target = new RenderTarget2D(GraphicsDevice, (int)m_ResWidth, (int)m_ResHeight);
 
             Content.RootDirectory = "Content";
         }
@@ -67,17 +69,21 @@ namespace Pizza_Puzzle_Game
             // TODO: use this.Content to load your game content here
             backgroundTex = Content.Load<Texture2D>("bg");
 
-            renderables.Add(new MaketableObject(new Vector2(Program.PPU * 2, Program.PPU * 2), Content.Load<Texture2D>("maketable"), Color.White));
+            renderables.Add(new MaketableObject(new Vector2(Program.PPU * 8, Program.PPU * 3), Content.Load<Texture2D>("maketable"), Color.White));
 
             Texture2D pizzaPanTex = Content.Load<Texture2D>("pan");
-            renderables.Add(new PanObject(new Vector2(Program.PPU * 4, Program.PPU * 21), pizzaPanTex, Color.White));
-            renderables.Add(new PanObject(new Vector2(Program.PPU * 7, Program.PPU * 21), pizzaPanTex, Color.White));
-            renderables.Add(new PanObject(new Vector2(Program.PPU * 10, Program.PPU * 21), pizzaPanTex, Color.White));
-            renderables.Add(new PanObject(new Vector2(Program.PPU * 13, Program.PPU * 21), pizzaPanTex, Color.White));
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 9.5f, Program.PPU * 22), pizzaPanTex, Color.White));
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 12.5f, Program.PPU * 22), pizzaPanTex, Color.White));
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 15.5f, Program.PPU * 22), pizzaPanTex, Color.White));
+            renderables.Add(new PanObject(new Vector2(Program.PPU * 18.5f, Program.PPU * 22), pizzaPanTex, Color.White));
 
-            PlayerObject newPlayer = new PlayerObject(new Vector2(Program.PPU * 9, Program.PPU * 21), Content.Load<Texture2D>("arrows"), Color.White);
+            PlayerObject newPlayer = new PlayerObject(new Vector2(Program.PPU * 15, Program.PPU * 22), Content.Load<Texture2D>("arrows"), Color.White);
             renderables.Add(newPlayer);
             updatables.Add(newPlayer);
+
+            IngredientObject i = new IngredientObject(Vector2.Zero, pizzaPanTex, Color.White);
+            renderables.Add(i);
+            updatables.Add(i);
         }
 
         /// <summary>

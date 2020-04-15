@@ -15,6 +15,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private Color m_arrowOneColor = Color.Red, m_arrowTwoColor = Color.Blue;
         
         private PlayerPosition m_playerPosition;
+        private Vector2 m_MidPos, m_LeftPos, m_RightPos;
         private Vector2 m_leftArrowPosition, m_rightArrowPosition;
         private bool m_swapToggle;
         #endregion
@@ -28,6 +29,10 @@ namespace Pizza_Puzzle_Game.GameObjects
             Active = true;
             Rendering = true;
             m_playerPosition = PlayerPosition.MIDDLE;
+
+            m_MidPos = position;
+            m_LeftPos = new Vector2(position.X - (Program.PPU * 3), position.Y);
+            m_RightPos= new Vector2(position.X + (Program.PPU * 3), position.Y);
         }
         #endregion
 
@@ -49,13 +54,13 @@ namespace Pizza_Puzzle_Game.GameObjects
             switch (m_playerPosition)
             {
                 case PlayerPosition.LEFT:
-                    Position = new Vector2(Program.PPU * 6, Program.PPU * 21);
+                    Position = m_LeftPos;
                     break;
                 case PlayerPosition.MIDDLE:
-                    Position = new Vector2(Program.PPU * 9, Program.PPU * 21);
+                    Position = m_MidPos;
                     break;
                 case PlayerPosition.RIGHT:
-                    Position = new Vector2(Program.PPU * 12, Program.PPU * 21);
+                    Position = m_RightPos;
                     break;
             }
 

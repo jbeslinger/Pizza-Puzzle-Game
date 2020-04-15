@@ -23,5 +23,10 @@ namespace Pizza_Puzzle_Game
         {
             return currentKeyState.IsKeyDown(key) && !previousKeyState.IsKeyDown(key);
         }
+
+        public static bool HasBeenReleased(Keys key)
+        {
+            return !currentKeyState.IsKeyDown(key) && previousKeyState.IsKeyDown(key);
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace Pizza_Puzzle_Game
     public static class Program
     {
         #region Constants
+        // This is the constant "Pixels Per Unit".  A "Unit" can be defined as an 8x8 pixel "square".  Use this when determining object positions.
         public const float PPU = 8.0f;
         #endregion
 
