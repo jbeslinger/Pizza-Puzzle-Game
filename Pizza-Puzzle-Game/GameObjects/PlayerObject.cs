@@ -43,13 +43,12 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             // Put Logic Here
             if (Keyboard.HasBeenPressed(Keys.Z) || GamePad.HasBeenPressed(Buttons.X))
-                m_swapToggle = !m_swapToggle;
+                PlaySwapAnimation();
             else if ((Keyboard.HasBeenPressed(Keys.Left) || GamePad.HasBeenPressed(Buttons.DPadLeft)) && m_playerPosition != (PlayerPosition)0)
                 m_playerPosition--;
             else if ((Keyboard.HasBeenPressed(Keys.Right) || GamePad.HasBeenPressed(Buttons.DPadRight)) && m_playerPosition != (PlayerPosition)2)
                 m_playerPosition++;
-
-
+            
             switch (m_playerPosition)
             {
                 case PlayerPosition.LEFT:
@@ -63,9 +62,23 @@ namespace Pizza_Puzzle_Game.GameObjects
                     break;
             }
 
-
             m_leftArrowPosition = new Vector2(Position.X - (Program.PPU * 2), Position.Y);
             m_rightArrowPosition = new Vector2(Position.X + (Program.PPU * 1), Position.Y);
+        }
+
+        public override void Render(SpriteBatch spriteBatch)
+        {
+            if (!Rendering)
+                return;
+
+            // Put Draw Code Here
+            spriteBatch.Draw(Sprite, m_leftArrowPosition, m_arrowOneColor);
+            spriteBatch.Draw(Sprite, m_rightArrowPosition, m_arrowTwoColor);
+        }
+
+        private void PlaySwapAnimation()
+        {
+            m_swapToggle = !m_swapToggle;
 
             if (m_swapToggle)
             {
@@ -77,16 +90,6 @@ namespace Pizza_Puzzle_Game.GameObjects
                 m_arrowOneColor = Color.Red;
                 m_arrowTwoColor = Color.Blue;
             }
-        }
-
-        public override void Render(SpriteBatch spriteBatch)
-        {
-            if (!Rendering)
-                return;
-
-            // Put Draw Code Here
-            spriteBatch.Draw(Sprite, m_leftArrowPosition, m_arrowOneColor);
-            spriteBatch.Draw(Sprite, m_rightArrowPosition, m_arrowTwoColor);
         }
         #endregion
     }
