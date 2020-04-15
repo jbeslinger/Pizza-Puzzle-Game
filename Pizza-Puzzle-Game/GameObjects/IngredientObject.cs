@@ -16,28 +16,38 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         #region Fields
         private ToppingType m_Type;
+        private Rectangle m_Rect; // This is the sprite in the spritesheet; it's passed to the Draw() function
         
         private Timer timer;
-        private float m_Interval = 750.0f; // The amount of time (ms) it takes for the ingredient to "update" it's falling
         private float m_SpeedDivisor = 16.0f; // The divisor for determining the speed at which ingredients fall when player is holding Down
 
-        private bool m_IsFalling;
-        private bool m_Speedup = false;
+        private bool m_IsFalling = true;
+        #endregion
+
+        #region Properties
+        public float Interval { get; set; } = 750.0f;
         #endregion
 
         #region Constructors
-        public IngredientObject(Vector2 position, Texture2D sprite, Color shade)
+        /// <param name="spritesheet">The spritesheet that contains all 7 types of ingredients.</param>
+        public IngredientObject(Vector2 position, Texture2D spritesheet, Color shade, int type)
         {
+            if (type < 0 || type > 6)
+            {
+                throw new Exception("That topping type is invalid.  Pick one between 0-6.");
+            }
+
             Position = position;
-            Sprite = sprite;
+            Sprite = spritesheet;
             Shade = shade;
             Active = true;
             Rendering = true;
 
-            m_Type = (ToppingType)new Random().Next(0, 7);
+            m_Type = (ToppingType)type;
+            m_Rect = new Rectangle((int)m_Type * ((int)Program.PPU * 3), 0, (int)Program.PPU * 3, (int)Program.PPU * 2);
 
             timer = new Timer();
-            timer.Interval = m_Interval;
+            timer.Interval = Interval;
             timer.Elapsed += OnFall;
             timer.AutoReset = true;
             timer.Enabled = true;
@@ -50,14 +60,17 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (!Active)
                 return;
 
-            // If the player presses/releases Down, then adjust the falling speed
-            if (Keyboard.HasBeenPressed(Keys.Down))
+            if (m_IsFalling)
             {
-                timer.Interval = m_Interval / m_SpeedDivisor;
-            }
-            else if (Keyboard.HasBeenReleased(Keys.Down))
-            {
-                timer.Interval = m_Interval;
+                // If the player presses/releases Down, then adjust the falling speed
+                if (Keyboard.HasBeenPressed(Keys.Down))
+                {
+                    timer.Interval = Interval / m_SpeedDivisor;
+                }
+                else if (Keyboard.HasBeenReleased(Keys.Down))
+                {
+                    timer.Interval = Interval;
+                }
             }
         }
 
@@ -66,7 +79,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (!Rendering)
                 return;
 
-            spriteBatch.Draw(Sprite, Position, Shade);
+            spriteBatch.Draw(Sprite, Position, m_Rect, Shade);
         }
         #endregion
 
