@@ -42,11 +42,11 @@ namespace Pizza_Puzzle_Game.GameObjects
                 return;
 
             // Put Logic Here
-            if (Keyboard.HasBeenPressed(Keys.Z))
+            if (Keyboard.HasBeenPressed(Keys.Z) || GamePad.HasBeenPressed(Buttons.X))
                 m_swapToggle = !m_swapToggle;
-            else if (Keyboard.HasBeenPressed(Keys.Left) && m_playerPosition != (PlayerPosition)0)
+            else if ((Keyboard.HasBeenPressed(Keys.Left) || GamePad.HasBeenPressed(Buttons.DPadLeft)) && m_playerPosition != (PlayerPosition)0)
                 m_playerPosition--;
-            else if (Keyboard.HasBeenPressed(Keys.Right) && m_playerPosition != (PlayerPosition)2)
+            else if ((Keyboard.HasBeenPressed(Keys.Right) || GamePad.HasBeenPressed(Buttons.DPadRight)) && m_playerPosition != (PlayerPosition)2)
                 m_playerPosition++;
 
 

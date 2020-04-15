@@ -63,11 +63,11 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (m_IsFalling)
             {
                 // If the player presses/releases Down, then adjust the falling speed
-                if (Keyboard.HasBeenPressed(Keys.Down))
+                if (Keyboard.HasBeenPressed(Keys.Down) || GamePad.HasBeenPressed(Buttons.DPadDown))
                 {
                     timer.Interval = Interval / m_SpeedDivisor;
                 }
-                else if (Keyboard.HasBeenReleased(Keys.Down))
+                else if (Keyboard.HasBeenReleased(Keys.Down) || GamePad.HasBeenReleased(Buttons.DPadDown))
                 {
                     timer.Interval = Interval;
                 }

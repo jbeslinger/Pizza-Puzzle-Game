@@ -92,7 +92,8 @@ namespace Pizza_Puzzle_Game
         protected override void Update(GameTime gameTime)
         {
             Keyboard.GetState();
-            if (Keyboard.HasBeenPressed(Keys.Escape))
+            GamePad.GetState();
+            if (Keyboard.HasBeenPressed(Keys.Escape) || GamePad.HasBeenPressed(Buttons.Start))
                 Exit();
 
             // TODO: Add your update logic here
