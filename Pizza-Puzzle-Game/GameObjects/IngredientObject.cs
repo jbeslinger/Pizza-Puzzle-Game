@@ -50,13 +50,14 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (!Active)
                 return;
 
+            // If the player presses/releases Down, then adjust the falling speed
             if (Keyboard.HasBeenPressed(Keys.Down))
             {
-                Console.WriteLine("Pressed, boi.");
+                timer.Interval = m_Interval / m_SpeedDivisor;
             }
-            if (Keyboard.HasBeenReleased(Keys.Down))
+            else if (Keyboard.HasBeenReleased(Keys.Down))
             {
-                Console.WriteLine("Released, boi.");
+                timer.Interval = m_Interval;
             }
         }
 
