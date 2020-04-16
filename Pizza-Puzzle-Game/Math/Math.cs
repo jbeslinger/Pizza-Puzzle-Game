@@ -17,8 +17,16 @@ namespace Pizza_Puzzle_Game
         /// </summary>
         public static Vector2 Lerp(Vector2 startValue, Vector2 endValue, float by)
         {
-            float returnX = (int)Lerp(startValue.X, endValue.X, by);
-            float returnY = (int)Lerp(startValue.Y, endValue.Y, by);
+            float returnX = Lerp(startValue.X, endValue.X, by);
+            float returnY = Lerp(startValue.Y, endValue.Y, by);
+
+            // This ugly, ugly code simply checks for asymptotes and fixes them by returning the value we were trying to reach
+            // I'm sorry.
+            if ((System.Math.Abs((int)returnX) == System.Math.Abs(endValue.X) - 1 || (int)returnX == endValue.X) && (System.Math.Abs((int)returnY) == System.Math.Abs(endValue.Y) - 1 || (int)returnY == endValue.Y))
+            {
+                return endValue;
+            }
+
             return new Vector2(returnX, returnY);
         }
     }

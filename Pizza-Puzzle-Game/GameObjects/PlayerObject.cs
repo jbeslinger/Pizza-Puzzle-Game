@@ -96,16 +96,14 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         private void PlaySwapAnimation()
         {
-            Vector2 endPosition = new Vector2(20, 0);
-            float animationSpeed = 0.1f; // A normalized value to represent how fast the animation plays
+            float animationSpeed = 0.25f; // A normalized value to represent how fast the animation plays
 
-            if (m_ArrowOnePos != endPosition)
+            if (m_ArrowOnePos != m_ArrowTwoPos)
             {
-                m_ArrowOnePos = Math.Lerp(m_ArrowOnePos, endPosition, animationSpeed);
+                m_ArrowOnePos = Math.Lerp(m_ArrowOnePos, m_ArrowTwoPos, animationSpeed);
             }
-            else if (m_ArrowOnePos == endPosition)
+            else if (m_ArrowOnePos == m_ArrowTwoPos)
             {
-                m_ArrowOnePos = endPosition;
                 m_PlayingSwapAnim = false;
                 Console.WriteLine("Animation complete!");
             }
