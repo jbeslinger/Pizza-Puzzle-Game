@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Pizza_Puzzle_Game.GameObjects
 {
@@ -11,12 +12,13 @@ namespace Pizza_Puzzle_Game.GameObjects
         #endregion
 
         #region Fields
-        private Color m_arrowOneColor = Color.Red, m_arrowTwoColor = Color.Blue;
-        
-        private PlayerPosition m_playerPosition;
-        private Vector2 m_MidPos, m_LeftPos, m_RightPos;
-        private Vector2 m_leftArrowPosition, m_rightArrowPosition;
-        private bool m_swapToggle;
+        private Color m_ArrowOneColor = Color.Red, m_ArrowTwoColor = Color.Blue;
+
+        private PlayerPosition m_PlayerPos;
+        private Vector2 m_MidPos, m_LeftPos, m_RightPos; // The set positions of the player object itself
+        private Vector2 m_ArrowOnePos, m_ArrowTwoPos; // The positions of the two arrows to the left and right of the player object
+
+        private bool m_PlayingSwapAnim; // An animation flag to signal when the swap anim starts and stops
         #endregion
 
         #region Constructors
@@ -27,11 +29,11 @@ namespace Pizza_Puzzle_Game.GameObjects
             Shade = shade;
             Active = true;
             Rendering = true;
-            m_playerPosition = PlayerPosition.MIDDLE;
+            m_PlayerPos = PlayerPosition.MIDDLE;
 
             m_MidPos = position;
             m_LeftPos = new Vector2(position.X - (Program.PPU * 3), position.Y);
-            m_RightPos= new Vector2(position.X + (Program.PPU * 3), position.Y);
+            m_RightPos = new Vector2(position.X + (Program.PPU * 3), position.Y);
         }
         #endregion
 
@@ -42,14 +44,28 @@ namespace Pizza_Puzzle_Game.GameObjects
                 return;
 
             // Put Logic Here
-            if (Keyboard.HasBeenPressed(Keys.Z) || GamePad.HasBeenPressed(Buttons.X))
+            if (m_PlayingSwapAnim)
+            {
                 PlaySwapAnimation();
-            else if ((Keyboard.HasBeenPressed(Keys.Left) || GamePad.HasBeenPressed(Buttons.DPadLeft)) && m_playerPosition != (PlayerPosition)0)
-                m_playerPosition--;
-            else if ((Keyboard.HasBeenPressed(Keys.Right) || GamePad.HasBeenPressed(Buttons.DPadRight)) && m_playerPosition != (PlayerPosition)2)
-                m_playerPosition++;
-            
-            switch (m_playerPosition)
+                return;
+            }
+
+            if (Keyboard.HasBeenPressed(Keys.Z) || GamePad.HasBeenPressed(Buttons.X))
+            {
+                m_PlayingSwapAnim = true;
+                Console.WriteLine("Animation started.");
+                return;
+            }
+            else if ((Keyboard.HasBeenPressed(Keys.Left) || GamePad.HasBeenPressed(Buttons.DPadLeft)) && m_PlayerPos != (PlayerPosition)0)
+            {
+                m_PlayerPos--;
+            }
+            else if ((Keyboard.HasBeenPressed(Keys.Right) || GamePad.HasBeenPressed(Buttons.DPadRight)) && m_PlayerPos != (PlayerPosition)2)
+            {
+                m_PlayerPos++;
+            }
+
+            switch (m_PlayerPos)
             {
                 case PlayerPosition.LEFT:
                     Position = m_LeftPos;
@@ -62,8 +78,8 @@ namespace Pizza_Puzzle_Game.GameObjects
                     break;
             }
 
-            m_leftArrowPosition = new Vector2(Position.X - (Program.PPU * 2), Position.Y);
-            m_rightArrowPosition = new Vector2(Position.X + (Program.PPU * 1), Position.Y);
+            m_ArrowOnePos = new Vector2(Position.X - (Program.PPU * 2), Position.Y);
+            m_ArrowTwoPos = new Vector2(Position.X + (Program.PPU * 1), Position.Y);
         }
 
         public override void Render(SpriteBatch spriteBatch)
@@ -72,23 +88,26 @@ namespace Pizza_Puzzle_Game.GameObjects
                 return;
 
             // Put Draw Code Here
-            spriteBatch.Draw(Sprite, m_leftArrowPosition, m_arrowOneColor);
-            spriteBatch.Draw(Sprite, m_rightArrowPosition, m_arrowTwoColor);
+
+            // Here I'm drawing two colored arrows based on the origin point of this object
+            spriteBatch.Draw(Sprite, m_ArrowOnePos, m_ArrowOneColor);
+            spriteBatch.Draw(Sprite, m_ArrowTwoPos, m_ArrowTwoColor);
         }
 
         private void PlaySwapAnimation()
         {
-            m_swapToggle = !m_swapToggle;
+            Vector2 endPosition = new Vector2(20, 0);
+            float animationSpeed = 0.1f; // A normalized value to represent how fast the animation plays
 
-            if (m_swapToggle)
+            if (m_ArrowOnePos != endPosition)
             {
-                m_arrowOneColor = Color.Blue;
-                m_arrowTwoColor = Color.Red;
+                m_ArrowOnePos = Math.Lerp(m_ArrowOnePos, endPosition, animationSpeed);
             }
-            else
+            else if (m_ArrowOnePos == endPosition)
             {
-                m_arrowOneColor = Color.Red;
-                m_arrowTwoColor = Color.Blue;
+                m_ArrowOnePos = endPosition;
+                m_PlayingSwapAnim = false;
+                Console.WriteLine("Animation complete!");
             }
         }
         #endregion

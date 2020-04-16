@@ -104,8 +104,6 @@ namespace Pizza_Puzzle_Game
             foreach (GameObject updatable in m_Updatables)
                 updatable.Update(gameTime);
 
-
-
             base.Update(gameTime);
         }
         
@@ -115,7 +113,7 @@ namespace Pizza_Puzzle_Game
 
             // TODO: Add your drawing code here
             GraphicsDevice.SetRenderTarget(m_Target);
-            m_SpriteBatch.Begin();
+            m_SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
             m_SpriteBatch.Draw(m_BackgroundTex, Vector2.Zero, Color.White);
 
             foreach (GameObject renderable in m_Renderables)

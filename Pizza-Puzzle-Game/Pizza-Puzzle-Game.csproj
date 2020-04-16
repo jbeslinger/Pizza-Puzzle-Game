@@ -50,6 +50,7 @@
     <Compile Include="GameObjects\PlayerObject.cs" />
     <Compile Include="Input\GamePad.cs" />
     <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Math\Math.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
