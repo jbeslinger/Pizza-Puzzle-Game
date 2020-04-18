@@ -7,7 +7,7 @@ namespace Pizza_Puzzle_Game.GameObjects
     /// <summary>
     /// This is a parent class for interactible objects in the game.
     /// </summary>
-    abstract class GameObject
+    public abstract class GameObject
     {
         #region Properties
         public Vector2 Position { get; set; }

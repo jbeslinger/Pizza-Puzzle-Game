@@ -22,7 +22,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private bool m_Swapped; // A flag to indicate that the player's arrows are or aren't swapped in position
         #endregion
 
-        #region Constructors
+        #region Constructors / Destructors
         public PlayerObject(Vector2 position, Texture2D sprite, Color shade)
         {
             Position = position;
@@ -35,6 +35,15 @@ namespace Pizza_Puzzle_Game.GameObjects
             m_MidPos = position;
             m_LeftPos = new Vector2(position.X - (Program.PPU * 3), position.Y);
             m_RightPos = new Vector2(position.X + (Program.PPU * 3), position.Y);
+
+            Game1.m_Renderables.Add(this);
+            Game1.m_Updatables.Add(this);
+        }
+
+        ~PlayerObject()
+        {
+            Game1.m_Renderables.Remove(this);
+            Game1.m_Updatables.Remove(this);
         }
         #endregion
 

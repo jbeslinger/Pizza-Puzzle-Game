@@ -28,7 +28,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         public float Interval { get; set; } = 750.0f;
         #endregion
 
-        #region Constructors
+        #region Constructors / Destructors
         /// <param name="spritesheet">The spritesheet that contains all 7 types of ingredients.</param>
         public IngredientObject(Vector2 position, Texture2D spritesheet, Color shade, int type)
         {
@@ -51,6 +51,12 @@ namespace Pizza_Puzzle_Game.GameObjects
             timer.Elapsed += OnFall;
             timer.AutoReset = true;
             timer.Enabled = true;
+        }
+
+        ~IngredientObject()
+        {
+            Game1.m_Renderables.Remove(this);
+            Game1.m_Updatables.Remove(this);
         }
         #endregion
 

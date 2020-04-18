@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Pizza_Puzzle_Game.GameObjects
 {
-    class PanObject : GameObject
+    class BackgroundObject : GameObject
     {
         #region Constructors / Destructors
-        public PanObject(Vector2 position, Texture2D sprite, Color shade)
+        public BackgroundObject(Vector2 position, Texture2D sprite, Color shade)
         {
             Position = position;
             Sprite = sprite;
@@ -18,7 +19,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Updatables.Add(this);
         }
 
-        ~PanObject()
+        ~BackgroundObject()
         {
             Game1.m_Renderables.Remove(this);
             Game1.m_Updatables.Remove(this);
