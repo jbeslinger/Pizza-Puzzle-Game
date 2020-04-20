@@ -37,6 +37,9 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Renderables.Add(this);
             Game1.m_Updatables.Add(this);
 
+            // Spawn a new player offset to the position of the maketable
+            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White);
+
             SetSpawnLocations();
 
             m_IngredientSpriteSheet = content.Load<Texture2D>("toppings");
@@ -86,6 +89,17 @@ namespace Pizza_Puzzle_Game.GameObjects
             spriteBatch.Draw(Sprite, Position, Shade);
         }
 
+        private void SetSpawnLocations()
+        {
+            // Set spawn locations based on local position
+            Vector2 origin = Position;
+
+            m_SpawnLocations[0] = origin + Program.ToPixelPos(1.5f, 1.0f);
+            m_SpawnLocations[1] = origin + Program.ToPixelPos(4.5f, 1.0f);
+            m_SpawnLocations[2] = origin + Program.ToPixelPos(7.5f, 1.0f);
+            m_SpawnLocations[3] = origin + Program.ToPixelPos(10.5f, 1.0f);
+        }
+
         private void SpawnIngredients()
         {
             Random r = new Random();
@@ -113,17 +127,6 @@ namespace Pizza_Puzzle_Game.GameObjects
                     --i;
                 }
             }
-        }
-
-        private void SetSpawnLocations()
-        {
-            // Set spawn locations based on local position
-            Vector2 origin = Position;
-
-            m_SpawnLocations[0] = origin + Program.ToPixelPos( 1.5f, 1.0f);
-            m_SpawnLocations[1] = origin + Program.ToPixelPos( 4.5f, 1.0f);
-            m_SpawnLocations[2] = origin + Program.ToPixelPos( 7.5f, 1.0f);
-            m_SpawnLocations[3] = origin + Program.ToPixelPos(10.5f, 1.0f);
         }
 
         private void CheckBoard()

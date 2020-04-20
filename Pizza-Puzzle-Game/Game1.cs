@@ -61,8 +61,6 @@ namespace Pizza_Puzzle_Game
             new PanObject(Program.ToPixelPos(12.5f, 22.0f), pizzaPanTex, Color.White);
             new PanObject(Program.ToPixelPos(15.5f, 22.0f), pizzaPanTex, Color.White);
             new PanObject(Program.ToPixelPos(18.5f, 22.0f), pizzaPanTex, Color.White);
-
-            PlayerObject newPlayer = new PlayerObject(Program.ToPixelPos(15.0f, 22.0f), Content.Load<Texture2D>("arrows"), Color.White);
         }
         
         protected override void UnloadContent()
