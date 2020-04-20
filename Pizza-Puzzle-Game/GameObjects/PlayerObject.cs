@@ -8,12 +8,14 @@ namespace Pizza_Puzzle_Game.GameObjects
     class PlayerObject : GameObject
     {
         #region Enums
+        public enum PlayerNumber { P1 = 0, P2 = 1, P3 = 2, P4 = 3 };
         enum PlayerPosition { LEFT = 0, MIDDLE = 1, RIGHT = 2 };
         #endregion
 
         #region Fields
-        private Color m_ArrowOneColor = Color.Red, m_ArrowTwoColor = Color.Blue;
+        private PlayerNumber m_PlayerNumber; // An id number associated with each player
 
+        private Color m_ArrowOneColor = Color.Red, m_ArrowTwoColor = Color.Blue;
         private PlayerPosition m_PlayerPos;
         private Vector2 m_MidPos, m_LeftPos, m_RightPos; // The set positions of the player object itself
         private Vector2 m_ArrowOnePos, m_ArrowTwoPos; // The positions of the two arrows to the left and right of the player object
@@ -23,8 +25,10 @@ namespace Pizza_Puzzle_Game.GameObjects
         #endregion
 
         #region Constructors / Destructors
-        public PlayerObject(Vector2 position, Texture2D sprite, Color shade)
+        public PlayerObject(Vector2 position, Texture2D sprite, Color shade, PlayerNumber playerNumber)
         {
+            m_PlayerNumber = playerNumber;
+
             Position = position;
             Sprite = sprite;
             Shade = shade;

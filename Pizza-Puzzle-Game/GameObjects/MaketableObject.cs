@@ -38,7 +38,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Updatables.Add(this);
 
             // Spawn a new player offset to the position of the maketable
-            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White);
+            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, PlayerObject.PlayerNumber.P1);
 
             SetSpawnLocations();
 
