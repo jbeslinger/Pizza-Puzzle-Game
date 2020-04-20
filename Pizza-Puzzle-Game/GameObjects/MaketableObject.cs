@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
+using System.Timers;
 
 namespace Pizza_Puzzle_Game.GameObjects
 {
@@ -13,11 +15,14 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         private Texture2D m_IngredientSpriteSheet;
 
-        private Vector2[] m_SpawnLocations =
-            { Program.ToPixelPos(9.5f, 4.0f),
-              Program.ToPixelPos(12.5f, 4.0f),
-              Program.ToPixelPos(15.5f, 4.0f),
-              Program.ToPixelPos(18.5f, 4.0f) }; // These are the spots that the ingredients will drop from
+        private Vector2[] m_SpawnLocations = new Vector2[4]; // These are the spots that the ingredients will drop from
+
+        private Timer timer;
+        private float m_Interval = 750.0f;
+        private float m_SpeedDivisor = 16.0f; // This divisor is used against the interval field when the player is holding down
+        private bool m_IsFalling = true; // Tells the object that the ingredients are falling
+
+        IngredientObject fallingIngredient1, fallingIngredient2;
         #endregion
 
         #region Constructors / Destructors
@@ -32,8 +37,16 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Renderables.Add(this);
             Game1.m_Updatables.Add(this);
 
+            SetSpawnLocations();
+
             m_IngredientSpriteSheet = content.Load<Texture2D>("toppings");
             SpawnIngredients();
+
+            timer = new Timer();
+            timer.Interval = m_Interval;
+            timer.Elapsed += OnDrop;
+            timer.AutoReset = true;
+            timer.Enabled = true;
         }
 
         ~MaketableObject()
@@ -48,6 +61,21 @@ namespace Pizza_Puzzle_Game.GameObjects
         {
             if (!Active)
                 return;
+
+            if (m_IsFalling)
+            {
+                // If the player presses/releases Down, then adjust the falling speed
+                if (Keyboard.HasBeenPressed(Keys.Down) || GamePad.HasBeenPressed(Buttons.DPadDown))
+                {
+                    timer.Interval = m_Interval / m_SpeedDivisor;
+                }
+                else if (Keyboard.HasBeenReleased(Keys.Down) || GamePad.HasBeenReleased(Buttons.DPadDown))
+                {
+                    timer.Interval = m_Interval;
+                }
+            }
+
+            CheckBoard();
         }
 
         public override void Render(SpriteBatch spriteBatch)
@@ -58,7 +86,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             spriteBatch.Draw(Sprite, Position, Shade);
         }
 
-        public void SpawnIngredients()
+        private void SpawnIngredients()
         {
             Random r = new Random();
 
@@ -67,11 +95,17 @@ namespace Pizza_Puzzle_Game.GameObjects
                 int index = r.Next(0, 4);
                 if (m_Columns[index][0] == null)
                 {
+                    // Oooh, an empty spot; I'll spawn now
                     IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7));
                     Game1.m_Updatables.Add(newIngredient);
                     Game1.m_Renderables.Add(newIngredient);
-
+                    
                     m_Columns[index][0] = newIngredient;
+
+                    if (i == 0)
+                        fallingIngredient1 = newIngredient;
+                    else if (i == 1)
+                        fallingIngredient2 = newIngredient;
                 }
                 else
                 {
@@ -79,6 +113,31 @@ namespace Pizza_Puzzle_Game.GameObjects
                     --i;
                 }
             }
+        }
+
+        private void SetSpawnLocations()
+        {
+            // Set spawn locations based on local position
+            Vector2 origin = Position;
+
+            m_SpawnLocations[0] = origin + Program.ToPixelPos( 1.5f, 1.0f);
+            m_SpawnLocations[1] = origin + Program.ToPixelPos( 4.5f, 1.0f);
+            m_SpawnLocations[2] = origin + Program.ToPixelPos( 7.5f, 1.0f);
+            m_SpawnLocations[3] = origin + Program.ToPixelPos(10.5f, 1.0f);
+        }
+
+        private void CheckBoard()
+        {
+
+        }
+        #endregion
+
+        #region Events
+        private void OnDrop(Object o, System.Timers.ElapsedEventArgs e)
+        {
+            //TODO: Make ingredients fall
+            fallingIngredient1.Position = new Vector2(fallingIngredient1.Position.X, fallingIngredient1.Position.Y + Program.PPU);
+            fallingIngredient2.Position = new Vector2(fallingIngredient2.Position.X, fallingIngredient2.Position.Y + Program.PPU);
         }
         #endregion
     }
