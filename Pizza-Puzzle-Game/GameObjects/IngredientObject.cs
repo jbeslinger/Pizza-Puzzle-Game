@@ -17,9 +17,14 @@ namespace Pizza_Puzzle_Game.GameObjects
         private Rectangle m_Rect; // This is the sprite in the spritesheet; it's passed to the Draw() function
         #endregion
 
+        #region Properties
+        public uint ColumnNumber { get; set; }
+        public uint RowNumber { get; set; }
+        #endregion
+
         #region Constructors / Destructors
         /// <param name="spritesheet">The spritesheet that contains all 7 types of ingredients.</param>
-        public IngredientObject(Vector2 position, Texture2D spritesheet, Color shade, int type)
+        public IngredientObject(Vector2 position, Texture2D spritesheet, Color shade, int type, uint columnNumber, uint rowNumber)
         {
             if (type < 0 || type > 6)
             {
@@ -34,6 +39,9 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             m_Type = (ToppingType)type;
             m_Rect = new Rectangle((int)m_Type * ((int)Program.PPU * 3), 0, (int)Program.PPU * 3, (int)Program.PPU * 2);
+
+            ColumnNumber = columnNumber;
+            RowNumber = rowNumber;
         }
 
         ~IngredientObject()

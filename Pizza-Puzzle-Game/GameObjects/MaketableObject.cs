@@ -22,7 +22,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private float m_SpeedDivisor = 16.0f; // This divisor is used against the interval field when the player is holding down
         private bool m_IsFalling = true; // Tells the object that the ingredients are falling
 
-        IngredientObject fallingIngredient1, fallingIngredient2;
+        IngredientObject m_FallingIngredient1, m_FallingIngredient2;
         #endregion
 
         #region Constructors / Destructors
@@ -110,16 +110,16 @@ namespace Pizza_Puzzle_Game.GameObjects
                 if (m_Columns[index][0] == null)
                 {
                     // Oooh, an empty spot; I'll spawn now
-                    IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7));
+                    IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7), (uint)index, 0);
                     Game1.m_Updatables.Add(newIngredient);
                     Game1.m_Renderables.Add(newIngredient);
                     
                     m_Columns[index][0] = newIngredient;
 
                     if (i == 0)
-                        fallingIngredient1 = newIngredient;
+                        m_FallingIngredient1 = newIngredient;
                     else if (i == 1)
-                        fallingIngredient2 = newIngredient;
+                        m_FallingIngredient2 = newIngredient;
                 }
                 else
                 {
@@ -139,8 +139,8 @@ namespace Pizza_Puzzle_Game.GameObjects
         private void OnDrop(Object o, System.Timers.ElapsedEventArgs e)
         {
             //TODO: Make ingredients fall
-            fallingIngredient1.Position = new Vector2(fallingIngredient1.Position.X, fallingIngredient1.Position.Y + Program.PPU);
-            fallingIngredient2.Position = new Vector2(fallingIngredient2.Position.X, fallingIngredient2.Position.Y + Program.PPU);
+            m_FallingIngredient1.Position = new Vector2(m_FallingIngredient1.Position.X, m_FallingIngredient1.Position.Y + Program.PPU);
+            m_FallingIngredient2.Position = new Vector2(m_FallingIngredient2.Position.X, m_FallingIngredient2.Position.Y + Program.PPU);
         }
         #endregion
     }
