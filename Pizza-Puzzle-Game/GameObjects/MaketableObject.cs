@@ -38,6 +38,12 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Renderables.Add(this);
             Game1.m_Updatables.Add(this);
 
+            Texture2D pizzaPanTex = content.Load<Texture2D>("pan");
+            new PanObject(Position + Program.ToPixelPos( 1.5f, 19.0f), pizzaPanTex, Color.White);
+            new PanObject(Position + Program.ToPixelPos( 4.5f, 19.0f), pizzaPanTex, Color.White);
+            new PanObject(Position + Program.ToPixelPos( 7.5f, 19.0f), pizzaPanTex, Color.White);
+            new PanObject(Position + Program.ToPixelPos(10.5f, 19.0f), pizzaPanTex, Color.White);
+
             // Spawn a new player offset to the position of the maketable
             new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, PlayerObject.PlayerNumber.P1);
 

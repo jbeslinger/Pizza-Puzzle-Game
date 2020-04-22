@@ -56,12 +56,6 @@ namespace Pizza_Puzzle_Game
             new BackgroundObject(Vector2.Zero, Content.Load<Texture2D>("bg"), Color.White);
             new MaketableObject(Program.ToPixelPos(1.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content);
             new MaketableObject(Program.ToPixelPos(16.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content);
-
-            Texture2D pizzaPanTex = Content.Load<Texture2D>("pan");
-            new PanObject(Program.ToPixelPos(9.5f, 22.0f), pizzaPanTex, Color.White);
-            new PanObject(Program.ToPixelPos(12.5f, 22.0f), pizzaPanTex, Color.White);
-            new PanObject(Program.ToPixelPos(15.5f, 22.0f), pizzaPanTex, Color.White);
-            new PanObject(Program.ToPixelPos(18.5f, 22.0f), pizzaPanTex, Color.White);
         }
         
         protected override void UnloadContent()
