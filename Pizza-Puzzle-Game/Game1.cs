@@ -54,7 +54,8 @@ namespace Pizza_Puzzle_Game
 
             // TODO: use this.Content to load your game content here
             new BackgroundObject(Vector2.Zero, Content.Load<Texture2D>("bg"), Color.White);
-            new MaketableObject(Program.ToPixelPos(8.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content);
+            new MaketableObject(Program.ToPixelPos(1.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content);
+            new MaketableObject(Program.ToPixelPos(16.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content);
 
             Texture2D pizzaPanTex = Content.Load<Texture2D>("pan");
             new PanObject(Program.ToPixelPos(9.5f, 22.0f), pizzaPanTex, Color.White);

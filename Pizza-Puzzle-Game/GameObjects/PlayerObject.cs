@@ -67,7 +67,6 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (Keyboard.HasBeenPressed(Keys.Z) || GamePad.HasBeenPressed(Buttons.X))
             {
                 m_PlayingSwapAnim = true;
-                Console.WriteLine("Animation started.");
                 return;
             }
             else if ((Keyboard.HasBeenPressed(Keys.Left) || GamePad.HasBeenPressed(Buttons.DPadLeft)) && m_PlayerPos != (PlayerPosition)0)
@@ -136,7 +135,6 @@ namespace Pizza_Puzzle_Game.GameObjects
             {
                 m_PlayingSwapAnim = false;
                 m_Swapped = !m_Swapped;
-                Console.WriteLine("Animation complete!");
             }
         }
         #endregion

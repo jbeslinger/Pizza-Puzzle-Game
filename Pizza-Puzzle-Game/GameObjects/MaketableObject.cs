@@ -141,22 +141,34 @@ namespace Pizza_Puzzle_Game.GameObjects
             Vector2 origin = Position;
 
             // Drop the first ingredient & update its array position
-            m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = null;
-            m_FallingIngredient1.RowNumber++;
-            m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = m_FallingIngredient1;
+            if (m_FallingIngredient1.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
+            {
+                if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] == null)
+                {
+                    m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = null;
+                    m_FallingIngredient1.RowNumber++;
+                    m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = m_FallingIngredient1;
 
-            m_FallingIngredient1.Position = origin + Program.ToPixelPos
-                (1.5f + 3.0f * m_FallingIngredient1.ColumnNumber,
-                  1.0f + m_FallingIngredient1.RowNumber);
+                    m_FallingIngredient1.Position = origin + Program.ToPixelPos
+                        (1.5f + 3.0f * m_FallingIngredient1.ColumnNumber,
+                          1.0f + m_FallingIngredient1.RowNumber);
+                }
+            }
 
             // Drop the second ingredient & update its array position
-            m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = null;
-            m_FallingIngredient2.RowNumber++;
-            m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = m_FallingIngredient2;
+            if (m_FallingIngredient2.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
+            {
+                if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] == null)
+                {
+                    m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = null;
+                    m_FallingIngredient2.RowNumber++;
+                    m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = m_FallingIngredient2;
 
-            m_FallingIngredient2.Position = origin + Program.ToPixelPos
-                (1.5f + 3.0f * m_FallingIngredient2.ColumnNumber,
-                  1.0f + m_FallingIngredient2.RowNumber);
+                    m_FallingIngredient2.Position = origin + Program.ToPixelPos
+                        (1.5f + 3.0f * m_FallingIngredient2.ColumnNumber,
+                          1.0f + m_FallingIngredient2.RowNumber);
+                }
+            }
         }
         #endregion
     }
