@@ -23,6 +23,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private bool m_PiecesAreFalling = true; // Tells the object that the ingredients are falling
 
         IngredientObject m_FallingIngredient1, m_FallingIngredient2;
+        IngredientObject m_NextIngredient1, m_NextIngredient2;
         #endregion
 
         #region Constructors / Destructors
@@ -44,9 +45,7 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             m_IngredientSpriteSheet = content.Load<Texture2D>("toppings");
 
-            SpawnTwoIngredients();
-            m_FallingIngredient1.IsFalling = true;
-            m_FallingIngredient2.IsFalling = true;
+            SpawnIngredients();
 
             timer = new Timer();
             timer.Interval = m_Interval;
@@ -54,11 +53,29 @@ namespace Pizza_Puzzle_Game.GameObjects
             timer.AutoReset = true;
             timer.Enabled = true;
 
+#if DEBUG
             Random r = new Random();
             IngredientObject newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 9.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 8);
             m_Columns[0][8] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 11.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 10);
+            m_Columns[0][10] = newIngredient;
+            Game1.m_Updatables.Add(newIngredient);
+            Game1.m_Renderables.Add(newIngredient);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 13.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 12);
+            m_Columns[0][12] = newIngredient;
+            Game1.m_Updatables.Add(newIngredient);
+            Game1.m_Renderables.Add(newIngredient);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 15.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 14);
+            m_Columns[0][14] = newIngredient;
+            Game1.m_Updatables.Add(newIngredient);
+            Game1.m_Renderables.Add(newIngredient);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 17.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 16);
+            m_Columns[0][16] = newIngredient;
+            Game1.m_Updatables.Add(newIngredient);
+            Game1.m_Renderables.Add(newIngredient);
+#endif
         }
 
         ~MaketableObject()
@@ -109,31 +126,80 @@ namespace Pizza_Puzzle_Game.GameObjects
             m_SpawnLocations[3] = origin + Program.ToPixelPos(10.5f, 1.0f);
         }
 
-        private void SpawnTwoIngredients()
+        private void SpawnIngredients()
         {
             Random r = new Random();
+            bool finished = false;
 
-            for (int i = 0; i < 2; i++)
+            while (!finished)
             {
-                int index = r.Next(0, 4);
-                if (m_Columns[index][0] == null)
+                if (m_FallingIngredient1 == null & m_NextIngredient1 == null)
                 {
-                    // Oooh, an empty spot; I'll spawn now
-                    IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7), (uint)index, 0);
-                    Game1.m_Updatables.Add(newIngredient);
-                    Game1.m_Renderables.Add(newIngredient);
-                    
-                    m_Columns[index][0] = newIngredient;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int index = r.Next(0, 4);
+                        if (m_Columns[index][0] == null)
+                        {
+                            // Oooh, an empty spot; I'll spawn now
+                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7), (uint)index, 0);
+                            lock (Game1.m_Updatables) // I have to lock these lists during this while loop to prevent IndexOutOfRangeException?
+                                Game1.m_Updatables.Add(newIngredient);
+                            lock (Game1.m_Renderables)
+                                Game1.m_Renderables.Add(newIngredient);
 
-                    if (i == 0)
-                        m_FallingIngredient1 = newIngredient;
-                    else if (i == 1)
-                        m_FallingIngredient2 = newIngredient;
+                            m_Columns[index][0] = newIngredient;
+
+                            if (i == 0)
+                            {
+                                m_FallingIngredient1 = newIngredient;
+                                m_FallingIngredient1.IsFalling = true;
+                            }
+                            else if (i == 1)
+                            {
+                                m_FallingIngredient2 = newIngredient;
+                                m_FallingIngredient2.IsFalling = true;
+                                finished = true;
+                            }
+                        }
+                        else
+                        {
+                            // "This spot was full, I'll try to spawn again."
+                            --i;
+                        }
+                    }
                 }
-                else
+                else if (m_FallingIngredient1 != null && m_NextIngredient1 == null)
                 {
-                    // "This spot was full, I'll try to spawn again."
-                    --i;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int index = r.Next(0, 4);
+                        if (m_Columns[index][0] == null)
+                        {
+                            // Oooh, an empty spot; I'll spawn now
+                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7), (uint)index, 0);
+                            lock (Game1.m_Updatables)
+                                Game1.m_Updatables.Add(newIngredient);
+                            lock (Game1.m_Renderables)
+                                Game1.m_Renderables.Add(newIngredient);
+
+                            m_Columns[index][0] = newIngredient;
+
+                            if (i == 0)
+                            {
+                                m_NextIngredient1 = newIngredient;
+                            }
+                            else if (i == 1)
+                            {
+                                m_NextIngredient2 = newIngredient;
+                                finished = true;
+                            }
+                        }
+                        else
+                        {
+                            // "This spot was full, I'll try to spawn again."
+                            --i;
+                        }
+                    }
                 }
             }
         }
@@ -145,15 +211,21 @@ namespace Pizza_Puzzle_Game.GameObjects
         #endregion
 
         #region Events
-        private void OnDrop(Object o, System.Timers.ElapsedEventArgs e)
+        private void OnDrop(Object o, ElapsedEventArgs e)
         {
             Vector2 origin = Position;
+
+            if (m_FallingIngredient1.RowNumber == 1)
+            {
+                SpawnIngredients();
+            }
 
             // Drop the first ingredient & update its array position
             if (m_FallingIngredient1.IsFalling && m_FallingIngredient1.RowNumber < m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
             {
                 bool nextSpotIsEmpty = false;
 
+                // Look ahead and see if there are any empty spots
                 try
                 {
                     if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 2] == null)
@@ -191,6 +263,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             {
                 bool nextSpotIsEmpty = false;
 
+                // Look ahead and see if there are any empty spots
                 try
                 {
                     if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 2] == null)
