@@ -232,14 +232,14 @@ namespace Pizza_Puzzle_Game.GameObjects
                 bool nextSpotIsEmpty = false;
 
                 // Look ahead and see if there are any empty spots
-                try
+                if (m_FallingIngredient1.RowNumber + 2 <= m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
                 {
                     if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 2] == null)
                         nextSpotIsEmpty = true;
                     else if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 2] != null)
                         nextSpotIsEmpty = false;
                 }
-                catch
+                else
                 {
                     if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] == null)
                         nextSpotIsEmpty = true;
@@ -270,14 +270,14 @@ namespace Pizza_Puzzle_Game.GameObjects
                 bool nextSpotIsEmpty = false;
 
                 // Look ahead and see if there are any empty spots
-                try
+                if (m_FallingIngredient2.RowNumber + 2 <= m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
                 {
                     if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 2] == null)
                         nextSpotIsEmpty = true;
                     else if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 2] != null)
                         nextSpotIsEmpty = false;
                 }
-                catch
+                else
                 {
                     if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] == null)
                         nextSpotIsEmpty = true;
