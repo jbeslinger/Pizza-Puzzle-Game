@@ -20,6 +20,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         #region Properties
         public uint ColumnNumber { get; set; }
         public uint RowNumber { get; set; }
+        public bool IsFalling { get; set; }
         #endregion
 
         #region Constructors / Destructors

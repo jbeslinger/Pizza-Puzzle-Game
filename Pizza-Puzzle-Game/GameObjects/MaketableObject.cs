@@ -20,7 +20,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private Timer timer;
         private float m_Interval = 750.0f;
         private float m_SpeedDivisor = 16.0f; // This divisor is used against the interval field when the player is holding down
-        private bool m_IsFalling = true; // Tells the object that the ingredients are falling
+        private bool m_PiecesAreFalling = true; // Tells the object that the ingredients are falling
 
         IngredientObject m_FallingIngredient1, m_FallingIngredient2;
         #endregion
@@ -43,13 +43,22 @@ namespace Pizza_Puzzle_Game.GameObjects
             SetSpawnLocations();
 
             m_IngredientSpriteSheet = content.Load<Texture2D>("toppings");
-            SpawnIngredients();
+
+            SpawnTwoIngredients();
+            m_FallingIngredient1.IsFalling = true;
+            m_FallingIngredient2.IsFalling = true;
 
             timer = new Timer();
             timer.Interval = m_Interval;
             timer.Elapsed += OnDrop;
             timer.AutoReset = true;
             timer.Enabled = true;
+
+            Random r = new Random();
+            IngredientObject newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 9.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 8);
+            m_Columns[0][8] = newIngredient;
+            Game1.m_Updatables.Add(newIngredient);
+            Game1.m_Renderables.Add(newIngredient);
         }
 
         ~MaketableObject()
@@ -65,7 +74,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (!Active)
                 return;
 
-            if (m_IsFalling)
+            if (m_PiecesAreFalling)
             {
                 // If the player presses/releases Down, then adjust the falling speed
                 if (Keyboard.HasBeenPressed(Keys.Down) || GamePad.HasBeenPressed(Buttons.DPadDown))
@@ -100,7 +109,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             m_SpawnLocations[3] = origin + Program.ToPixelPos(10.5f, 1.0f);
         }
 
-        private void SpawnIngredients()
+        private void SpawnTwoIngredients()
         {
             Random r = new Random();
 
@@ -141,9 +150,26 @@ namespace Pizza_Puzzle_Game.GameObjects
             Vector2 origin = Position;
 
             // Drop the first ingredient & update its array position
-            if (m_FallingIngredient1.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
+            if (m_FallingIngredient1.IsFalling && m_FallingIngredient1.RowNumber < m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
             {
-                if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] == null)
+                bool nextSpotIsEmpty = false;
+
+                try
+                {
+                    if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 2] == null)
+                        nextSpotIsEmpty = true;
+                    else if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 2] != null)
+                        nextSpotIsEmpty = false;
+                }
+                catch
+                {
+                    if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] == null)
+                        nextSpotIsEmpty = true;
+                    else if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] != null)
+                        nextSpotIsEmpty = false;
+                }
+
+                if (nextSpotIsEmpty)
                 {
                     m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = null;
                     m_FallingIngredient1.RowNumber++;
@@ -151,14 +177,36 @@ namespace Pizza_Puzzle_Game.GameObjects
 
                     m_FallingIngredient1.Position = origin + Program.ToPixelPos
                         (1.5f + 3.0f * m_FallingIngredient1.ColumnNumber,
-                          1.0f + m_FallingIngredient1.RowNumber);
+                            1.0f + m_FallingIngredient1.RowNumber);
+                }
+                else
+                {
+                    // TODO: Add code that stops this piece from falling
+                    m_FallingIngredient1.IsFalling = false;
                 }
             }
 
             // Drop the second ingredient & update its array position
-            if (m_FallingIngredient2.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
+            if (m_FallingIngredient2.IsFalling && m_FallingIngredient2.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
             {
-                if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] == null)
+                bool nextSpotIsEmpty = false;
+
+                try
+                {
+                    if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 2] == null)
+                        nextSpotIsEmpty = true;
+                    else if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 2] != null)
+                        nextSpotIsEmpty = false;
+                }
+                catch
+                {
+                    if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] == null)
+                        nextSpotIsEmpty = true;
+                    else if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] != null)
+                        nextSpotIsEmpty = false;
+                }
+
+                if (nextSpotIsEmpty)
                 {
                     m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = null;
                     m_FallingIngredient2.RowNumber++;
@@ -166,7 +214,12 @@ namespace Pizza_Puzzle_Game.GameObjects
 
                     m_FallingIngredient2.Position = origin + Program.ToPixelPos
                         (1.5f + 3.0f * m_FallingIngredient2.ColumnNumber,
-                          1.0f + m_FallingIngredient2.RowNumber);
+                            1.0f + m_FallingIngredient2.RowNumber);
+                }
+                else
+                {
+                    // TODO: Add code that stops this piece from falling
+                    m_FallingIngredient2.IsFalling = false;
                 }
             }
         }
