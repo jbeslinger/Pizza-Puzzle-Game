@@ -14,6 +14,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private IngredientObject[][] m_Columns = new IngredientObject[][] { m_IngredientColumn0, m_IngredientColumn1, m_IngredientColumn2, m_IngredientColumn3 };
 
         private Texture2D m_IngredientSpriteSheet;
+        private Texture2D m_BracketTex;
 
         private Vector2[] m_SpawnLocations = new Vector2[4]; // These are the spots that the ingredients will drop from
 
@@ -27,7 +28,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         #endregion
 
         #region Constructors / Destructors
-        public MaketableObject(Vector2 position, Texture2D sprite, Color shade, ContentManager content)
+        public MaketableObject(Vector2 position, Texture2D sprite, Color shade, ContentManager content, PlayerObject.PlayerNumber playerNumber)
         {
             Position = position;
             Sprite = sprite;
@@ -45,7 +46,9 @@ namespace Pizza_Puzzle_Game.GameObjects
             new PanObject(Position + Program.ToPixelPos(10.5f, 19.0f), pizzaPanTex, Color.White);
 
             // Spawn a new player offset to the position of the maketable
-            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, PlayerObject.PlayerNumber.P1);
+            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, playerNumber);
+
+            m_BracketTex = content.Load<Texture2D>("brackets");
 
             SetSpawnLocations();
 
@@ -61,26 +64,31 @@ namespace Pizza_Puzzle_Game.GameObjects
 
 #if DEBUG
             Random r = new Random();
-            IngredientObject newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 9.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 8);
+            IngredientObject newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 9.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 8);
             m_Columns[0][8] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 11.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 10);
+            newIngredient.IsSolidified = true;
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 11.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 10);
             m_Columns[0][10] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 13.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 12);
+            newIngredient.IsSolidified = true;
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 13.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 12);
             m_Columns[0][12] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 15.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 14);
+            newIngredient.IsSolidified = true;
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 15.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 14);
             m_Columns[0][14] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 17.0f), m_IngredientSpriteSheet, Color.White, r.Next(0, 7), 0, 16);
+            newIngredient.IsSolidified = true;
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 17.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 16);
             m_Columns[0][16] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
+            newIngredient.IsSolidified = true;
 #endif
         }
 
@@ -147,7 +155,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_Columns[index][0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
-                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7), (uint)index, 0);
+                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
                             lock (Game1.m_Updatables) // I have to lock these lists during this while loop to prevent IndexOutOfRangeException?
                                 Game1.m_Updatables.Add(newIngredient);
                             lock (Game1.m_Renderables)
@@ -158,12 +166,10 @@ namespace Pizza_Puzzle_Game.GameObjects
                             if (i == 0)
                             {
                                 m_FallingIngredient1 = newIngredient;
-                                m_FallingIngredient1.IsFalling = true;
                             }
                             else if (i == 1)
                             {
                                 m_FallingIngredient2 = newIngredient;
-                                m_FallingIngredient2.IsFalling = true;
                                 finished = true;
                             }
                         }
@@ -182,7 +188,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_Columns[index][0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
-                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, Color.White, r.Next(0, 7), (uint)index, 0);
+                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
                             lock (Game1.m_Updatables)
                                 Game1.m_Updatables.Add(newIngredient);
                             lock (Game1.m_Renderables)
@@ -220,6 +226,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private void OnDrop(Object o, ElapsedEventArgs e)
         {
             Vector2 origin = Position;
+            bool nextSpotIsEmpty = false;
 
             if (m_FallingIngredient1.RowNumber == 1)
             {
@@ -227,9 +234,9 @@ namespace Pizza_Puzzle_Game.GameObjects
             }
 
             // Drop the first ingredient & update its array position
-            if (m_FallingIngredient1.IsFalling && m_FallingIngredient1.RowNumber < m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
+            if (m_FallingIngredient1.RowNumber < m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
             {
-                bool nextSpotIsEmpty = false;
+                nextSpotIsEmpty = false;
 
                 // Look ahead and see if there are any empty spots
                 if (m_FallingIngredient1.RowNumber + 2 <= m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
@@ -246,28 +253,28 @@ namespace Pizza_Puzzle_Game.GameObjects
                     else if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] != null)
                         nextSpotIsEmpty = false;
                 }
+            }
 
-                if (nextSpotIsEmpty)
-                {
-                    m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = null;
-                    m_FallingIngredient1.RowNumber++;
-                    m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = m_FallingIngredient1;
+            if (nextSpotIsEmpty)
+            {
+                m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = null;
+                m_FallingIngredient1.RowNumber++;
+                m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = m_FallingIngredient1;
 
-                    m_FallingIngredient1.Position = origin + Program.ToPixelPos
-                        (1.5f + 3.0f * m_FallingIngredient1.ColumnNumber,
-                            1.0f + m_FallingIngredient1.RowNumber);
-                }
-                else
-                {
-                    // TODO: Add code that stops this piece from falling
-                    m_FallingIngredient1.IsFalling = false;
-                }
+                m_FallingIngredient1.Position = origin + Program.ToPixelPos
+                    (1.5f + 3.0f * m_FallingIngredient1.ColumnNumber,
+                        1.0f + m_FallingIngredient1.RowNumber);
+            }
+            else if (!nextSpotIsEmpty)
+            {
+                // TODO: Add code that stops this piece from falling
+                m_FallingIngredient1.IsSolidified = true;
             }
 
             // Drop the second ingredient & update its array position
-            if (m_FallingIngredient2.IsFalling && m_FallingIngredient2.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
+            if (m_FallingIngredient2.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
             {
-                bool nextSpotIsEmpty = false;
+                nextSpotIsEmpty = false;
 
                 // Look ahead and see if there are any empty spots
                 if (m_FallingIngredient2.RowNumber + 2 <= m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
@@ -284,22 +291,22 @@ namespace Pizza_Puzzle_Game.GameObjects
                     else if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] != null)
                         nextSpotIsEmpty = false;
                 }
+            }
 
-                if (nextSpotIsEmpty)
-                {
-                    m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = null;
-                    m_FallingIngredient2.RowNumber++;
-                    m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = m_FallingIngredient2;
+            if (nextSpotIsEmpty)
+            {
+                m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = null;
+                m_FallingIngredient2.RowNumber++;
+                m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = m_FallingIngredient2;
 
-                    m_FallingIngredient2.Position = origin + Program.ToPixelPos
-                        (1.5f + 3.0f * m_FallingIngredient2.ColumnNumber,
-                            1.0f + m_FallingIngredient2.RowNumber);
-                }
-                else
-                {
-                    // TODO: Add code that stops this piece from falling
-                    m_FallingIngredient2.IsFalling = false;
-                }
+                m_FallingIngredient2.Position = origin + Program.ToPixelPos
+                    (1.5f + 3.0f * m_FallingIngredient2.ColumnNumber,
+                        1.0f + m_FallingIngredient2.RowNumber);
+            }
+            else if (!nextSpotIsEmpty)
+            {
+                // TODO: Add code that stops this piece from falling
+                m_FallingIngredient2.IsSolidified = true;
             }
         }
         #endregion

@@ -54,8 +54,8 @@ namespace Pizza_Puzzle_Game
 
             // TODO: use this.Content to load your game content here
             new BackgroundObject(Vector2.Zero, Content.Load<Texture2D>("bg"), Color.White);
-            new MaketableObject(Program.ToPixelPos(1.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content);
-            new MaketableObject(Program.ToPixelPos(16.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content);
+            new MaketableObject(Program.ToPixelPos( 1.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content, PlayerObject.PlayerNumber.P1);
+            new MaketableObject(Program.ToPixelPos(16.0f, 3.0f), Content.Load<Texture2D>("maketable"), Color.White, Content, PlayerObject.PlayerNumber.P2);
         }
         
         protected override void UnloadContent()
@@ -71,7 +71,7 @@ namespace Pizza_Puzzle_Game
                 Exit();
 
             // TODO: Add your update logic here
-            foreach (GameObject updatable in m_Updatables)
+            foreach (GameObject updatable in m_Updatables.ToArray())
                 updatable.Update(gameTime);
 
             base.Update(gameTime);
@@ -85,7 +85,7 @@ namespace Pizza_Puzzle_Game
             GraphicsDevice.SetRenderTarget(m_Target);
             m_SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
-            foreach (GameObject renderable in m_Renderables)
+            foreach (GameObject renderable in m_Renderables.ToArray())
                 renderable.Render(m_SpriteBatch);
             m_SpriteBatch.End();
 

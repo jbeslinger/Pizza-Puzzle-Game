@@ -14,18 +14,19 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         #region Fields
         private ToppingType m_Type;
-        private Rectangle m_Rect; // This is the sprite in the spritesheet; it's passed to the Draw() function
+        private Rectangle m_Rect; // This is used to get the sprite out of the spritesheet
+        private Texture2D m_BracketTex;
         #endregion
 
         #region Properties
         public uint ColumnNumber { get; set; }
         public uint RowNumber { get; set; }
-        public bool IsFalling { get; set; }
+        public bool IsSolidified { get; set; }
         #endregion
 
         #region Constructors / Destructors
         /// <param name="spritesheet">The spritesheet that contains all 7 types of ingredients.</param>
-        public IngredientObject(Vector2 position, Texture2D spritesheet, Color shade, int type, uint columnNumber, uint rowNumber)
+        public IngredientObject(Vector2 position, Texture2D spritesheet, Texture2D bracketTex, Color shade, int type, uint columnNumber, uint rowNumber)
         {
             if (type < 0 || type > 6)
             {
@@ -34,6 +35,7 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             Position = position;
             Sprite = spritesheet;
+            m_BracketTex = bracketTex;
             Shade = shade;
             Active = true;
             Rendering = true;
@@ -65,6 +67,9 @@ namespace Pizza_Puzzle_Game.GameObjects
                 return;
 
             spriteBatch.Draw(Sprite, Position, m_Rect, Shade);
+
+            if (IsSolidified)
+                spriteBatch.Draw(m_BracketTex, Position, Shade);
         }
         #endregion
     }
