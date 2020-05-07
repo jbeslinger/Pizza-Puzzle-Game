@@ -55,35 +55,6 @@ namespace Pizza_Puzzle_Game.GameObjects
             timer.Elapsed += OnDrop;
             timer.AutoReset = true;
             timer.Enabled = true;
-
-#if DEBUG
-            Random r = new Random();
-            IngredientObject newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 9.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 2, 0, 8);
-            m_Columns[0][8] = newIngredient;
-            Game1.m_Updatables.Add(newIngredient);
-            Game1.m_Renderables.Add(newIngredient);
-            newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 11.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 3, 0, 10);
-            m_Columns[0][10] = newIngredient;
-            Game1.m_Updatables.Add(newIngredient);
-            Game1.m_Renderables.Add(newIngredient);
-            newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 13.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 4, 0, 12);
-            m_Columns[0][12] = newIngredient;
-            Game1.m_Updatables.Add(newIngredient);
-            Game1.m_Renderables.Add(newIngredient);
-            newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 15.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 5, 0, 14);
-            m_Columns[0][14] = newIngredient;
-            Game1.m_Updatables.Add(newIngredient);
-            Game1.m_Renderables.Add(newIngredient);
-            newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 17.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 6, 0, 16);
-            m_Columns[0][16] = newIngredient;
-            Game1.m_Updatables.Add(newIngredient);
-            Game1.m_Renderables.Add(newIngredient);
-            newIngredient.IsSolidified = true;
-#endif
         }
 
         ~MaketableObject()
@@ -219,6 +190,14 @@ namespace Pizza_Puzzle_Game.GameObjects
         {
             Vector2 origin = Position;
             bool nextSpotIsEmpty = false;
+
+            if (m_FallingIngredient1.IsSolidified && m_FallingIngredient2.IsSolidified)
+            {
+                m_FallingIngredient1 = m_NextIngredient1;
+                m_NextIngredient1 = null;
+                m_FallingIngredient2 = m_NextIngredient2;
+                m_NextIngredient2 = null;
+            }
 
             if (m_FallingIngredient1.RowNumber == 1)
             {
