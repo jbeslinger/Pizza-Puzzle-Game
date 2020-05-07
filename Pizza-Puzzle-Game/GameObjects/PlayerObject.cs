@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -22,10 +23,12 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         private bool m_PlayingSwapAnim; // An animation flag to signal when the swap anim starts and stops
         private bool m_Swapped; // A flag to indicate that the player's arrows are or aren't swapped in position
+
+        private PanObject[] m_Pans = new PanObject[4];
         #endregion
 
         #region Constructors / Destructors
-        public PlayerObject(Vector2 position, Texture2D sprite, Color shade, PlayerNumber playerNumber)
+        public PlayerObject(Vector2 position, Texture2D sprite, Color shade, ContentManager content, PlayerNumber playerNumber)
         {
             m_PlayerNumber = playerNumber;
 
@@ -42,6 +45,12 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             Game1.m_Renderables.Add(this);
             Game1.m_Updatables.Add(this);
+
+            Texture2D pizzaPanTex = content.Load<Texture2D>("pan");
+            m_Pans[0] = new PanObject(Position + Program.ToPixelPos(-5.5f, 0.0f), pizzaPanTex, Color.White);
+            m_Pans[1] = new PanObject(Position + Program.ToPixelPos(-2.5f, 0.0f), pizzaPanTex, Color.White);
+            m_Pans[2] = new PanObject(Position + Program.ToPixelPos( 0.5f, 0.0f), pizzaPanTex, Color.White);
+            m_Pans[3] = new PanObject(Position + Program.ToPixelPos( 3.5f, 0.0f), pizzaPanTex, Color.White);
         }
 
         ~PlayerObject()
@@ -123,6 +132,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         private void PlaySwapAnimation()
         {
             float animationSpeed = 0.4f; // A normalized value to represent how fast the animation plays
+
             Vector2 playerLeftPos = new Vector2(Position.X - (Program.PPU * 2), Position.Y);
             Vector2 playerRightPos = new Vector2(Position.X + (Program.PPU * 1), Position.Y);
 
@@ -130,11 +140,31 @@ namespace Pizza_Puzzle_Game.GameObjects
             {
                 m_ArrowOnePos = Math.Lerp(m_ArrowOnePos, playerRightPos, animationSpeed);
                 m_ArrowTwoPos = Math.Lerp(m_ArrowTwoPos, playerLeftPos, animationSpeed);
+
+                switch(m_PlayerPos)
+                {
+                    case PlayerPosition.LEFT:
+                        m_Pans[0].Position = new Vector2(m_ArrowOnePos.X - (Program.PPU * 0.5f), m_ArrowOnePos.Y);
+                        m_Pans[1].Position = new Vector2(m_ArrowTwoPos.X - (Program.PPU * 0.5f), m_ArrowTwoPos.Y);
+                        break;
+                    case PlayerPosition.MIDDLE:
+                        m_Pans[1].Position = new Vector2(m_ArrowOnePos.X - (Program.PPU * 0.5f), m_ArrowOnePos.Y);
+                        m_Pans[2].Position = new Vector2(m_ArrowTwoPos.X - (Program.PPU * 0.5f), m_ArrowTwoPos.Y);
+                        break;
+                    case PlayerPosition.RIGHT:
+                        m_Pans[2].Position = new Vector2(m_ArrowOnePos.X - (Program.PPU * 0.5f), m_ArrowOnePos.Y);
+                        m_Pans[3].Position = new Vector2(m_ArrowTwoPos.X - (Program.PPU * 0.5f), m_ArrowTwoPos.Y);
+                        break;
+                }
             }
             else
             {
                 m_PlayingSwapAnim = false;
                 m_Swapped = !m_Swapped;
+                m_Pans[0].Position = m_MidPos + Program.ToPixelPos(-5.5f, 0.0f);
+                m_Pans[1].Position = m_MidPos + Program.ToPixelPos(-2.5f, 0.0f);
+                m_Pans[2].Position = m_MidPos + Program.ToPixelPos( 0.5f, 0.0f);
+                m_Pans[3].Position = m_MidPos + Program.ToPixelPos( 3.5f, 0.0f);
             }
         }
         #endregion

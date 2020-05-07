@@ -39,14 +39,8 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Renderables.Add(this);
             Game1.m_Updatables.Add(this);
 
-            Texture2D pizzaPanTex = content.Load<Texture2D>("pan");
-            new PanObject(Position + Program.ToPixelPos( 1.5f, 19.0f), pizzaPanTex, Color.White);
-            new PanObject(Position + Program.ToPixelPos( 4.5f, 19.0f), pizzaPanTex, Color.White);
-            new PanObject(Position + Program.ToPixelPos( 7.5f, 19.0f), pizzaPanTex, Color.White);
-            new PanObject(Position + Program.ToPixelPos(10.5f, 19.0f), pizzaPanTex, Color.White);
-
             // Spawn a new player offset to the position of the maketable
-            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, playerNumber);
+            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, content, playerNumber);
 
             m_BracketTex = content.Load<Texture2D>("brackets");
 
@@ -64,27 +58,27 @@ namespace Pizza_Puzzle_Game.GameObjects
 
 #if DEBUG
             Random r = new Random();
-            IngredientObject newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 9.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 8);
+            IngredientObject newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 9.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 2, 0, 8);
             m_Columns[0][8] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
             newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 11.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 10);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 11.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 3, 0, 10);
             m_Columns[0][10] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
             newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 13.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 12);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 13.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 4, 0, 12);
             m_Columns[0][12] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
             newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 15.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 14);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 15.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 5, 0, 14);
             m_Columns[0][14] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
             newIngredient.IsSolidified = true;
-            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 17.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), 0, 16);
+            newIngredient = new IngredientObject(Position + Program.ToPixelPos(1.5f, 17.0f), m_IngredientSpriteSheet, m_BracketTex, Color.White, 6, 0, 16);
             m_Columns[0][16] = newIngredient;
             Game1.m_Updatables.Add(newIngredient);
             Game1.m_Renderables.Add(newIngredient);
@@ -117,8 +111,6 @@ namespace Pizza_Puzzle_Game.GameObjects
                     timer.Interval = m_Interval;
                 }
             }
-
-            CheckBoard();
         }
 
         public override void Render(SpriteBatch spriteBatch)
@@ -216,7 +208,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             }
         }
 
-        private void CheckBoard()
+        private void CheckBoardForMatches()
         {
 
         }
@@ -308,6 +300,8 @@ namespace Pizza_Puzzle_Game.GameObjects
                 // TODO: Add code that stops this piece from falling
                 m_FallingIngredient2.IsSolidified = true;
             }
+
+            CheckBoardForMatches();
         }
         #endregion
     }
