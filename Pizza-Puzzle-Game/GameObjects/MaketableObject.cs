@@ -95,6 +95,15 @@ namespace Pizza_Puzzle_Game.GameObjects
             {
                 SwapColumns();
             }
+
+            foreach(IngredientObject ingredient in m_IngredientsOnTheBoard)
+            {
+                if (ingredient == null)
+                    continue;
+                ingredient.Position = Position + Program.ToPixelPos
+                    (1.5f + 3.0f * ingredient.ColumnNumber,
+                        1.0f + ingredient.RowNumber);
+            }
         }
 
         public override void Render(SpriteBatch spriteBatch)
@@ -196,15 +205,54 @@ namespace Pizza_Puzzle_Game.GameObjects
         {
             //m_PlayingSwapAnim = true;
 
-            IngredientObject[] tempArray;
-
             switch(m_Player.PlayerPos)
             {
                 case PlayerObject.PlayerPosition.LEFT:
+                    for (int i = 0; i < m_IngredientsOnTheBoard.GetLength(1); i++)
+                    {
+                        IngredientObject[] tempArray = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)];
+                        tempArray[i] = m_IngredientsOnTheBoard[0, i];
+
+                        m_IngredientsOnTheBoard[0, i] = m_IngredientsOnTheBoard[1, i];
+                        if (m_IngredientsOnTheBoard[0, i] != null)
+                            m_IngredientsOnTheBoard[0, i].ColumnNumber = 0;
+
+                        m_IngredientsOnTheBoard[1, i] = tempArray[i];
+                        if (m_IngredientsOnTheBoard[1, i] != null)
+                            m_IngredientsOnTheBoard[1, i].ColumnNumber = 1;
+                    }
                     break;
+
                 case PlayerObject.PlayerPosition.MIDDLE:
+                    for (int i = 0; i < m_IngredientsOnTheBoard.GetLength(1); i++)
+                    {
+                        IngredientObject[] tempArray = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)];
+                        tempArray[i] = m_IngredientsOnTheBoard[1, i];
+
+                        m_IngredientsOnTheBoard[1, i] = m_IngredientsOnTheBoard[2, i];
+                        if (m_IngredientsOnTheBoard[1, i] != null)
+                            m_IngredientsOnTheBoard[1, i].ColumnNumber = 1;
+
+                        m_IngredientsOnTheBoard[2, i] = tempArray[i];
+                        if (m_IngredientsOnTheBoard[2, i] != null)
+                            m_IngredientsOnTheBoard[2, i].ColumnNumber = 2;
+                    }
                     break;
+
                 case PlayerObject.PlayerPosition.RIGHT:
+                    for (int i = 0; i < m_IngredientsOnTheBoard.GetLength(1); i++)
+                    {
+                        IngredientObject[] tempArray = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)];
+                        tempArray[i] = m_IngredientsOnTheBoard[2, i];
+
+                        m_IngredientsOnTheBoard[2, i] = m_IngredientsOnTheBoard[3, i];
+                        if (m_IngredientsOnTheBoard[2, i] != null)
+                            m_IngredientsOnTheBoard[2, i].ColumnNumber = 2;
+
+                        m_IngredientsOnTheBoard[3, i] = tempArray[i];
+                        if (m_IngredientsOnTheBoard[3, i] != null)
+                            m_IngredientsOnTheBoard[3, i].ColumnNumber = 3;
+                    }
                     break;
             }
 
@@ -270,14 +318,9 @@ namespace Pizza_Puzzle_Game.GameObjects
                 m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber] = null;
                 m_FallingIngredient1.RowNumber++;
                 m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber] = m_FallingIngredient1;
-
-                m_FallingIngredient1.Position = origin + Program.ToPixelPos
-                    (1.5f + 3.0f * m_FallingIngredient1.ColumnNumber,
-                        1.0f + m_FallingIngredient1.RowNumber);
             }
             else if (!nextSpotIsEmpty)
             {
-                // TODO: Add code that stops this piece from falling
                 m_FallingIngredient1.IsSolidified = true;
             }
 
@@ -308,14 +351,9 @@ namespace Pizza_Puzzle_Game.GameObjects
                 m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber] = null;
                 m_FallingIngredient2.RowNumber++;
                 m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber] = m_FallingIngredient2;
-
-                m_FallingIngredient2.Position = origin + Program.ToPixelPos
-                    (1.5f + 3.0f * m_FallingIngredient2.ColumnNumber,
-                        1.0f + m_FallingIngredient2.RowNumber);
             }
             else if (!nextSpotIsEmpty)
             {
-                // TODO: Add code that stops this piece from falling
                 m_FallingIngredient2.IsSolidified = true;
             }
 
