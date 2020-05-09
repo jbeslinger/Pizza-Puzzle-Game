@@ -10,8 +10,7 @@ namespace Pizza_Puzzle_Game.GameObjects
     class MaketableObject : GameObject
     {
         #region Fields
-        private static IngredientObject[] m_IngredientColumn0 = new IngredientObject[17], m_IngredientColumn1 = new IngredientObject[17], m_IngredientColumn2 = new IngredientObject[17], m_IngredientColumn3 = new IngredientObject[17];
-        private IngredientObject[][] m_Columns = new IngredientObject[][] { m_IngredientColumn0, m_IngredientColumn1, m_IngredientColumn2, m_IngredientColumn3 };
+        private IngredientObject[,] m_IngredientsOnTheBoard = new IngredientObject[4,17];
 
         private Texture2D m_IngredientSpriteSheet;
         private Texture2D m_BracketTex;
@@ -22,9 +21,12 @@ namespace Pizza_Puzzle_Game.GameObjects
         private float m_Interval = 750.0f;
         private float m_SpeedDivisor = 16.0f; // This divisor is used against the interval field when the player is holding down
         private bool m_PiecesAreFalling = true; // Tells the object that the ingredients are falling
+        private bool m_PlayingSwapAnim = false;
 
-        IngredientObject m_FallingIngredient1, m_FallingIngredient2;
-        IngredientObject m_NextIngredient1, m_NextIngredient2;
+        private IngredientObject m_FallingIngredient1, m_FallingIngredient2;
+        private IngredientObject m_NextIngredient1, m_NextIngredient2;
+
+        private PlayerObject m_Player;
         #endregion
 
         #region Constructors / Destructors
@@ -40,7 +42,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Updatables.Add(this);
 
             // Spawn a new player offset to the position of the maketable
-            new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, content, playerNumber);
+            m_Player = new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, content, playerNumber);
 
             m_BracketTex = content.Load<Texture2D>("brackets");
 
@@ -70,6 +72,12 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (!Active)
                 return;
 
+            if (m_PlayingSwapAnim)
+            {
+                PlaySwapAnimation();
+                return;
+            }
+
             if (m_PiecesAreFalling)
             {
                 // If the player presses/releases Down, then adjust the falling speed
@@ -81,6 +89,11 @@ namespace Pizza_Puzzle_Game.GameObjects
                 {
                     timer.Interval = m_Interval;
                 }
+            }
+
+            if (Keyboard.HasBeenPressed(Keys.Z) || GamePad.HasBeenPressed(Buttons.X))
+            {
+                SwapColumns();
             }
         }
 
@@ -115,7 +128,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                     for (int i = 0; i < 2; i++)
                     {
                         int index = r.Next(0, 4);
-                        if (m_Columns[index][0] == null)
+                        if (m_IngredientsOnTheBoard[index, 0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
                             IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
@@ -124,7 +137,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                             lock (Game1.m_Renderables)
                                 Game1.m_Renderables.Add(newIngredient);
 
-                            m_Columns[index][0] = newIngredient;
+                            m_IngredientsOnTheBoard[index, 0] = newIngredient;
 
                             if (i == 0)
                             {
@@ -148,7 +161,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                     for (int i = 0; i < 2; i++)
                     {
                         int index = r.Next(0, 4);
-                        if (m_Columns[index][0] == null)
+                        if (m_IngredientsOnTheBoard[index, 0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
                             IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
@@ -157,7 +170,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                             lock (Game1.m_Renderables)
                                 Game1.m_Renderables.Add(newIngredient);
 
-                            m_Columns[index][0] = newIngredient;
+                            m_IngredientsOnTheBoard[index, 0] = newIngredient;
 
                             if (i == 0)
                             {
@@ -177,6 +190,32 @@ namespace Pizza_Puzzle_Game.GameObjects
                     }
                 }
             }
+        }
+
+        private void SwapColumns()
+        {
+            //m_PlayingSwapAnim = true;
+
+            IngredientObject[] tempArray;
+
+            switch(m_Player.PlayerPos)
+            {
+                case PlayerObject.PlayerPosition.LEFT:
+                    break;
+                case PlayerObject.PlayerPosition.MIDDLE:
+                    break;
+                case PlayerObject.PlayerPosition.RIGHT:
+                    break;
+            }
+
+            PlaySwapAnimation();
+        }
+
+        private void PlaySwapAnimation()
+        {
+            float animationSpeed = 0.4f; // A normalized value to represent how fast the animation plays
+
+
         }
 
         private void CheckBoardForMatches()
@@ -205,32 +244,32 @@ namespace Pizza_Puzzle_Game.GameObjects
             }
 
             // Drop the first ingredient & update its array position
-            if (m_FallingIngredient1.RowNumber < m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
+            if (m_FallingIngredient1.RowNumber < m_IngredientsOnTheBoard.GetLength(1) - 1)
             {
                 nextSpotIsEmpty = false;
 
                 // Look ahead and see if there are any empty spots
-                if (m_FallingIngredient1.RowNumber + 2 <= m_Columns[m_FallingIngredient1.ColumnNumber].Length - 1)
+                if (m_FallingIngredient1.RowNumber + 2 <= m_IngredientsOnTheBoard.GetLength(1) - 1)
                 {
-                    if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 2] == null)
+                    if (m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber + 2] == null)
                         nextSpotIsEmpty = true;
-                    else if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 2] != null)
+                    else if (m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber + 2] != null)
                         nextSpotIsEmpty = false;
                 }
                 else
                 {
-                    if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] == null)
+                    if (m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber + 1] == null)
                         nextSpotIsEmpty = true;
-                    else if (m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber + 1] != null)
+                    else if (m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber + 1] != null)
                         nextSpotIsEmpty = false;
                 }
             }
 
             if (nextSpotIsEmpty)
             {
-                m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = null;
+                m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber] = null;
                 m_FallingIngredient1.RowNumber++;
-                m_Columns[m_FallingIngredient1.ColumnNumber][m_FallingIngredient1.RowNumber] = m_FallingIngredient1;
+                m_IngredientsOnTheBoard[m_FallingIngredient1.ColumnNumber, m_FallingIngredient1.RowNumber] = m_FallingIngredient1;
 
                 m_FallingIngredient1.Position = origin + Program.ToPixelPos
                     (1.5f + 3.0f * m_FallingIngredient1.ColumnNumber,
@@ -243,32 +282,32 @@ namespace Pizza_Puzzle_Game.GameObjects
             }
 
             // Drop the second ingredient & update its array position
-            if (m_FallingIngredient2.RowNumber < m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
+            if (m_FallingIngredient2.RowNumber < m_IngredientsOnTheBoard.GetLength(1) - 1)
             {
                 nextSpotIsEmpty = false;
 
                 // Look ahead and see if there are any empty spots
-                if (m_FallingIngredient2.RowNumber + 2 <= m_Columns[m_FallingIngredient2.ColumnNumber].Length - 1)
+                if (m_FallingIngredient2.RowNumber + 2 <= m_IngredientsOnTheBoard.GetLength(1) - 1)
                 {
-                    if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 2] == null)
+                    if (m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber + 2] == null)
                         nextSpotIsEmpty = true;
-                    else if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 2] != null)
+                    else if (m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber + 2] != null)
                         nextSpotIsEmpty = false;
                 }
                 else
                 {
-                    if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] == null)
+                    if (m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber + 1] == null)
                         nextSpotIsEmpty = true;
-                    else if (m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber + 1] != null)
+                    else if (m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber + 1] != null)
                         nextSpotIsEmpty = false;
                 }
             }
 
             if (nextSpotIsEmpty)
             {
-                m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = null;
+                m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber] = null;
                 m_FallingIngredient2.RowNumber++;
-                m_Columns[m_FallingIngredient2.ColumnNumber][m_FallingIngredient2.RowNumber] = m_FallingIngredient2;
+                m_IngredientsOnTheBoard[m_FallingIngredient2.ColumnNumber, m_FallingIngredient2.RowNumber] = m_FallingIngredient2;
 
                 m_FallingIngredient2.Position = origin + Program.ToPixelPos
                     (1.5f + 3.0f * m_FallingIngredient2.ColumnNumber,

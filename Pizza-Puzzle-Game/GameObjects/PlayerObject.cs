@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 
 namespace Pizza_Puzzle_Game.GameObjects
 {
@@ -10,7 +9,7 @@ namespace Pizza_Puzzle_Game.GameObjects
     {
         #region Enums
         public enum PlayerNumber { P1 = 0, P2 = 1, P3 = 2, P4 = 3 };
-        enum PlayerPosition { LEFT = 0, MIDDLE = 1, RIGHT = 2 };
+        public enum PlayerPosition { LEFT = 0, MIDDLE = 1, RIGHT = 2 };
         #endregion
 
         #region Fields
@@ -25,6 +24,10 @@ namespace Pizza_Puzzle_Game.GameObjects
         private bool m_Swapped; // A flag to indicate that the player's arrows are or aren't swapped in position
 
         private PanObject[] m_Pans = new PanObject[4];
+        #endregion
+
+        #region Properties
+        public PlayerPosition PlayerPos { get; set; }
         #endregion
 
         #region Constructors / Destructors
