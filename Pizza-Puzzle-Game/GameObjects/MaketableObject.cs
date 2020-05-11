@@ -205,57 +205,27 @@ namespace Pizza_Puzzle_Game.GameObjects
         {
             //m_PlayingSwapAnim = true;
 
-            switch(m_Player.PlayerPos)
+            for (int i = m_IngredientsOnTheBoard.GetLength(1) - 1; i > 0; i -= 2)
             {
-                case PlayerObject.PlayerPosition.LEFT:
-                    for (int i = 0; i < m_IngredientsOnTheBoard.GetLength(1); i++)
-                    {
-                        IngredientObject[] tempArray = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)];
-                        tempArray[i] = m_IngredientsOnTheBoard[0, i];
+                int leftColNum = (int)m_Player.PlayerPos;
+                int rightColNum = leftColNum++;
+                IngredientObject leftIngr = null, rightIngr = null;
 
-                        m_IngredientsOnTheBoard[0, i] = m_IngredientsOnTheBoard[1, i];
-                        if (m_IngredientsOnTheBoard[0, i] != null)
-                            m_IngredientsOnTheBoard[0, i].ColumnNumber = 0;
-
-                        m_IngredientsOnTheBoard[1, i] = tempArray[i];
-                        if (m_IngredientsOnTheBoard[1, i] != null)
-                            m_IngredientsOnTheBoard[1, i].ColumnNumber = 1;
-                    }
-                    break;
-
-                case PlayerObject.PlayerPosition.MIDDLE:
-                    for (int i = 0; i < m_IngredientsOnTheBoard.GetLength(1); i++)
-                    {
-                        IngredientObject[] tempArray = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)];
-                        tempArray[i] = m_IngredientsOnTheBoard[1, i];
-
-                        m_IngredientsOnTheBoard[1, i] = m_IngredientsOnTheBoard[2, i];
-                        if (m_IngredientsOnTheBoard[1, i] != null)
-                            m_IngredientsOnTheBoard[1, i].ColumnNumber = 1;
-
-                        m_IngredientsOnTheBoard[2, i] = tempArray[i];
-                        if (m_IngredientsOnTheBoard[2, i] != null)
-                            m_IngredientsOnTheBoard[2, i].ColumnNumber = 2;
-                    }
-                    break;
-
-                case PlayerObject.PlayerPosition.RIGHT:
-                    for (int i = 0; i < m_IngredientsOnTheBoard.GetLength(1); i++)
-                    {
-                        IngredientObject[] tempArray = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)];
-                        tempArray[i] = m_IngredientsOnTheBoard[2, i];
-
-                        m_IngredientsOnTheBoard[2, i] = m_IngredientsOnTheBoard[3, i];
-                        if (m_IngredientsOnTheBoard[2, i] != null)
-                            m_IngredientsOnTheBoard[2, i].ColumnNumber = 2;
-
-                        m_IngredientsOnTheBoard[3, i] = tempArray[i];
-                        if (m_IngredientsOnTheBoard[3, i] != null)
-                            m_IngredientsOnTheBoard[3, i].ColumnNumber = 3;
-                    }
-                    break;
+                if (m_IngredientsOnTheBoard[leftColNum, i] != null && m_IngredientsOnTheBoard[leftColNum, i].IsSolidified)
+                {
+                    leftIngr = m_IngredientsOnTheBoard[leftColNum, i];
+                    leftIngr.ColumnNumber = (uint)rightColNum;
+                }
+                if (m_IngredientsOnTheBoard[rightColNum, i] != null && m_IngredientsOnTheBoard[rightColNum, i].IsSolidified)
+                {
+                    rightIngr = m_IngredientsOnTheBoard[rightColNum, i];
+                    rightIngr.ColumnNumber = (uint)leftColNum;
+                }
+                
+                m_IngredientsOnTheBoard[leftColNum, i] = rightIngr;
+                m_IngredientsOnTheBoard[rightColNum, i] = leftIngr;
             }
-
+            
             PlaySwapAnimation();
         }
 
