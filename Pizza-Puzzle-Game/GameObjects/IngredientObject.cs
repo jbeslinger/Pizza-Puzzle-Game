@@ -16,12 +16,14 @@ namespace Pizza_Puzzle_Game.GameObjects
         private ToppingType m_Type;
         private Rectangle m_Rect; // This is used to get the sprite out of the spritesheet
         private Texture2D m_BracketTex;
+        private bool m_IsSolidified;
         #endregion
 
         #region Properties
         public uint ColumnNumber { get; set; }
         public uint RowNumber { get; set; }
-        public bool IsSolidified { get; set; }
+        public bool IsFalling { get; set; }
+        public bool IsSolidified { get { return m_IsSolidified; } set { if (value) { IsFalling = false; m_IsSolidified = value; } } }
         #endregion
 
         #region Constructors / Destructors
@@ -39,6 +41,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             Shade = shade;
             Active = true;
             Rendering = true;
+            IsFalling = true;
 
             m_Type = (ToppingType)type;
             m_Rect = new Rectangle((int)m_Type * ((int)Program.PPU * 3), 0, (int)Program.PPU * 3, (int)Program.PPU * 2);

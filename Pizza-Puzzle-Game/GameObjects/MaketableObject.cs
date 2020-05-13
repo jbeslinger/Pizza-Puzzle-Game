@@ -205,34 +205,92 @@ namespace Pizza_Puzzle_Game.GameObjects
         {
             //m_PlayingSwapAnim = true;
 
-            for (int i = m_IngredientsOnTheBoard.GetLength(1) - 1; i > 0; i -= 2)
-            {
-                int leftColNum = (int)m_Player.PlayerPos;
-                int rightColNum = leftColNum++;
-                IngredientObject leftIngr = null, rightIngr = null;
+            int leftColumnIndex = (int)m_Player.PlayerPos,
+                rightColumnIndex = leftColumnIndex + 1;
+            IngredientObject[] leftColumnCopy = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)],
+                rightColumnCopy = new IngredientObject[m_IngredientsOnTheBoard.GetLength(1)];
 
-                if (m_IngredientsOnTheBoard[leftColNum, i] != null && m_IngredientsOnTheBoard[leftColNum, i].IsSolidified)
-                {
-                    leftIngr = m_IngredientsOnTheBoard[leftColNum, i];
-                    leftIngr.ColumnNumber = (uint)rightColNum;
-                }
-                if (m_IngredientsOnTheBoard[rightColNum, i] != null && m_IngredientsOnTheBoard[rightColNum, i].IsSolidified)
-                {
-                    rightIngr = m_IngredientsOnTheBoard[rightColNum, i];
-                    rightIngr.ColumnNumber = (uint)leftColNum;
-                }
-                
-                m_IngredientsOnTheBoard[leftColNum, i] = rightIngr;
-                m_IngredientsOnTheBoard[rightColNum, i] = leftIngr;
+            // Copy the left and right columns of Ingredient objects
+            for (int rowIndex = 0; rowIndex < m_IngredientsOnTheBoard.GetLength(1); rowIndex++)
+            {
+                leftColumnCopy[rowIndex] = m_IngredientsOnTheBoard[leftColumnIndex, rowIndex];
+                rightColumnCopy[rowIndex] = m_IngredientsOnTheBoard[rightColumnIndex, rowIndex];
             }
-            
-            PlaySwapAnimation();
+
+            // Swap them based on several conditions
+            for (int rowIndex = 1; rowIndex < m_IngredientsOnTheBoard.GetLength(1); rowIndex++)
+            {
+                IngredientObject leftIngredient = leftColumnCopy[rowIndex], rightIngredient = rightColumnCopy[rowIndex];
+
+                if (leftIngredient == null && rightIngredient == null)
+                {
+                    continue;
+                }
+
+                if (leftIngredient != null && rightIngredient == null)
+                {
+                    if (leftIngredient.IsSolidified)
+                    {
+                        leftIngredient.ColumnNumber = (uint)rightColumnIndex;
+                        m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = leftIngredient;
+                        m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = null;
+                    }
+                    else if (leftIngredient.IsFalling)
+                    {
+                        if (m_IngredientsOnTheBoard[rightColumnIndex, rowIndex + 1] != null)
+                        {
+                            leftIngredient.ColumnNumber = (uint)rightColumnIndex;
+                            m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = leftIngredient;
+                            m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = null;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+                else if (leftIngredient == null && rightIngredient != null)
+                {
+                    if (rightIngredient.IsSolidified)
+                    {
+                        rightIngredient.ColumnNumber = (uint)leftColumnIndex;
+                        m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = rightIngredient;
+                        m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = null;
+                    }
+                    else if (rightIngredient.IsFalling)
+                    {
+                        if (m_IngredientsOnTheBoard[leftColumnIndex, rowIndex + 1] != null)
+                        {
+                            rightIngredient.ColumnNumber = (uint)leftColumnIndex;
+                            m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = rightIngredient;
+                            m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = null;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+                else if (leftIngredient != null && rightIngredient != null)
+                {
+                    if ((leftIngredient.IsSolidified && rightIngredient.IsSolidified) || (leftIngredient.IsSolidified && rightIngredient.IsFalling || leftIngredient.IsFalling && rightIngredient.IsSolidified))
+                    {
+                        leftIngredient.ColumnNumber = (uint)rightColumnIndex;
+                        rightIngredient.ColumnNumber = (uint)leftColumnIndex;
+                        m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = rightIngredient;
+                        m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = leftIngredient;
+                    }
+                }
+            }
+
+            //PlaySwapAnimation();
         }
 
         private void PlaySwapAnimation()
         {
             float animationSpeed = 0.4f; // A normalized value to represent how fast the animation plays
-
+            int leftColumnIndex = (int)m_Player.PlayerPos;
+            int rightColumnIndex = leftColumnIndex + 1;
 
         }
 
