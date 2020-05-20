@@ -10,20 +10,24 @@ namespace Pizza_Puzzle_Game.GameObjects
         // These numbers were chosen for a reason: they correspond with the index # of the sprite in the toppings texture
         // The names of the enums and the numbers are interchangeable
         enum ToppingType { PIZZA_BASE = 0, CHEESE_TOPPING = 1, PEPPERONI = 2, MUSHROOM = 3, BELL_PEPPER = 4, HAM = 5, PINEAPPLE = 6 };
+        public enum State { FALLING, SOLID };
         #endregion
 
         #region Fields
         private ToppingType m_Type;
         private Rectangle m_Rect; // This is used to get the sprite out of the spritesheet
         private Texture2D m_BracketTex;
-        private bool m_IsSolidified;
+
+        public bool isSwapping;
+        public State ingredientState;
         #endregion
 
         #region Properties
         public uint ColumnNumber { get; set; }
         public uint RowNumber { get; set; }
-        public bool IsFalling { get; set; }
-        public bool IsSolidified { get { return m_IsSolidified; } set { if (value) { IsFalling = false; m_IsSolidified = value; } } }
+        
+        public bool IsFalling { get { return ingredientState == State.FALLING; } }
+        public bool IsSolidified { get { return ingredientState == State.SOLID; } }
         #endregion
 
         #region Constructors / Destructors
@@ -39,9 +43,11 @@ namespace Pizza_Puzzle_Game.GameObjects
             Sprite = spritesheet;
             m_BracketTex = bracketTex;
             Shade = shade;
+
             Active = true;
             Rendering = true;
-            IsFalling = true;
+
+            ingredientState = State.FALLING;
 
             m_Type = (ToppingType)type;
             m_Rect = new Rectangle((int)m_Type * ((int)Program.PPU * 3), 0, (int)Program.PPU * 3, (int)Program.PPU * 2);
@@ -71,7 +77,7 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             spriteBatch.Draw(Sprite, Position, m_Rect, Shade);
 
-            if (IsSolidified)
+            if (ingredientState == State.SOLID)
                 spriteBatch.Draw(m_BracketTex, Position, Shade);
         }
         #endregion

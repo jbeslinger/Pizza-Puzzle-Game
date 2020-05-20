@@ -349,7 +349,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             }
             else if (!nextSpotIsEmpty)
             {
-                m_FallingIngredient1.IsSolidified = true;
+                m_FallingIngredient1.ingredientState = IngredientObject.State.SOLID;
             }
 
             // Drop the second ingredient & update its array position
@@ -382,7 +382,7 @@ namespace Pizza_Puzzle_Game.GameObjects
             }
             else if (!nextSpotIsEmpty)
             {
-                m_FallingIngredient2.IsSolidified = true;
+                m_FallingIngredient2.ingredientState = IngredientObject.State.SOLID;
             }
 
             CheckBoardForMatches();
