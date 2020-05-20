@@ -23,17 +23,19 @@ namespace Pizza_Puzzle_Game.GameObjects
             Game1.m_Updatables.Add(this);
             Game1.m_Renderables.Add(this);
         }
-
-        ~GameObject()
-        {
-            Game1.m_Updatables.Remove(this);
-            Game1.m_Renderables.Remove(this);
-        }
         #endregion
 
         #region Abstract Methods
         public abstract void Update(GameTime gameTime);
         public abstract void Render(SpriteBatch spriteBatch);
+        #endregion
+
+        #region Methods
+        public void Destroy()
+        {
+            Game1.m_Updatables.Remove(this);
+            Game1.m_Renderables.Remove(this);
+        }
         #endregion
     }
 }

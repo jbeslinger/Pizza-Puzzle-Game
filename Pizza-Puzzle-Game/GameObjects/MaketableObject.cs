@@ -87,15 +87,6 @@ namespace Pizza_Puzzle_Game.GameObjects
             {
                 SwapColumns();
             }
-
-            foreach(IngredientObject ingredient in m_IngredientsOnTheBoard)
-            {
-                if (ingredient == null)
-                    continue;
-                ingredient.Position = Position + Program.ToPixelPos
-                    (1.5f + 3.0f * ingredient.ColumnNumber,
-                        1.0f + ingredient.RowNumber);
-            }
         }
 
         public override void Render(SpriteBatch spriteBatch)
@@ -132,7 +123,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_IngredientsOnTheBoard[index, 0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
-                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
+                            IngredientObject newIngredient = new IngredientObject(this, m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
 
                             m_IngredientsOnTheBoard[index, 0] = newIngredient;
 
@@ -161,7 +152,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_IngredientsOnTheBoard[index, 0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
-                            IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
+                            IngredientObject newIngredient = new IngredientObject(this, m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
 
                             m_IngredientsOnTheBoard[index, 0] = newIngredient;
 
@@ -187,7 +178,7 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         private void SwapColumns()
         {
-            //m_PlayingSwapAnim = true;
+            m_PlayingSwapAnim = true;
 
             int leftColumnIndex = (int)m_Player.PlayerPos,
                 rightColumnIndex = leftColumnIndex + 1;
@@ -216,6 +207,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                     if (leftIngredient.IsSolidified)
                     {
                         leftIngredient.ColumnNumber = (uint)rightColumnIndex;
+                        leftIngredient.isSwapping = true;
                         m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = leftIngredient;
                         m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = null;
                     }
@@ -224,6 +216,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_IngredientsOnTheBoard[rightColumnIndex, rowIndex + 1] != null)
                         {
                             leftIngredient.ColumnNumber = (uint)rightColumnIndex;
+                            leftIngredient.isSwapping = true;
                             m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = leftIngredient;
                             m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = null;
                         }
@@ -238,6 +231,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                     if (rightIngredient.IsSolidified)
                     {
                         rightIngredient.ColumnNumber = (uint)leftColumnIndex;
+                        rightIngredient.isSwapping = true;
                         m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = rightIngredient;
                         m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = null;
                     }
@@ -246,6 +240,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_IngredientsOnTheBoard[leftColumnIndex, rowIndex + 1] != null)
                         {
                             rightIngredient.ColumnNumber = (uint)leftColumnIndex;
+                            rightIngredient.isSwapping = true;
                             m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = rightIngredient;
                             m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = null;
                         }
@@ -261,13 +256,15 @@ namespace Pizza_Puzzle_Game.GameObjects
                     {
                         leftIngredient.ColumnNumber = (uint)rightColumnIndex;
                         rightIngredient.ColumnNumber = (uint)leftColumnIndex;
+                        leftIngredient.isSwapping = true;
+                        rightIngredient.isSwapping = true;
                         m_IngredientsOnTheBoard[leftColumnIndex, rowIndex] = rightIngredient;
                         m_IngredientsOnTheBoard[rightColumnIndex, rowIndex] = leftIngredient;
                     }
                 }
             }
 
-            //PlaySwapAnimation();
+            PlaySwapAnimation();
         }
 
         private void PlaySwapAnimation()
@@ -275,7 +272,45 @@ namespace Pizza_Puzzle_Game.GameObjects
             float animationSpeed = 0.4f; // A normalized value to represent how fast the animation plays
             int leftColumnIndex = (int)m_Player.PlayerPos;
             int rightColumnIndex = leftColumnIndex + 1;
+            bool animationIsDone = true;
 
+            for (int rowIndex = 1; rowIndex < m_IngredientsOnTheBoard.GetLength(1); rowIndex++)
+            {
+                IngredientObject leftIngredient = m_IngredientsOnTheBoard[leftColumnIndex, rowIndex], rightIngredient = m_IngredientsOnTheBoard[rightColumnIndex, rowIndex];
+
+                if (leftIngredient != null && leftIngredient.isSwapping)
+                {
+                    Vector2 dest = Position + Program.ToPixelPos(1.5f + 3.0f * leftIngredient.ColumnNumber, 1.0f + leftIngredient.RowNumber);
+
+                    if (leftIngredient.Position != dest)
+                    {
+                        leftIngredient.Position = Math.Lerp(leftIngredient.Position, dest, animationSpeed);
+                        animationIsDone = false;
+                    }
+                    else
+                    {
+                        leftIngredient.isSwapping = false;
+                    }
+                }
+
+                if (rightIngredient != null && rightIngredient.isSwapping)
+                {
+                    Vector2 dest = Position + Program.ToPixelPos(1.5f + 3.0f * rightIngredient.ColumnNumber, 1.0f + rightIngredient.RowNumber);
+
+                    if (rightIngredient.Position != dest)
+                    {
+                        rightIngredient.Position = Math.Lerp(rightIngredient.Position, dest, animationSpeed);
+                        animationIsDone = false;
+                    }
+                    else
+                    {
+                        rightIngredient.isSwapping = false;
+                    }
+                }
+            }
+
+            if (animationIsDone)
+                m_PlayingSwapAnim = false;
         }
 
         private void CheckBoardForMatches()

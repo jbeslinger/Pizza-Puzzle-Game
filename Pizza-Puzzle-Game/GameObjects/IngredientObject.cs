@@ -14,6 +14,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         #endregion
 
         #region Fields
+        private MaketableObject m_ParentTableObject;
         private ToppingType m_Type;
         private Rectangle m_Rect; // This is used to get the sprite out of the spritesheet
         private Texture2D m_BracketTex;
@@ -32,13 +33,15 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         #region Constructors / Destructors
         /// <param name="spritesheet">The spritesheet that contains all 7 types of ingredients.</param>
-        public IngredientObject(Vector2 position, Texture2D spritesheet, Texture2D bracketTex, Color shade, int type, uint columnNumber, uint rowNumber)
+        public IngredientObject(MaketableObject parentTableObject, Vector2 position, Texture2D spritesheet, Texture2D bracketTex, Color shade, int type, uint columnNumber, uint rowNumber)
             : base()
         {
             if (type < 0 || type > 6)
             {
                 throw new Exception("That topping type is invalid.  Pick one between 0-6.");
             }
+
+            m_ParentTableObject = parentTableObject;
 
             Position = position;
             Sprite = spritesheet;
@@ -63,6 +66,9 @@ namespace Pizza_Puzzle_Game.GameObjects
         {
             if (!Active)
                 return;
+
+            if (!isSwapping)
+                Position = m_ParentTableObject.Position + Program.ToPixelPos(1.5f + 3.0f * ColumnNumber, 1.0f + RowNumber);
         }
 
         public override void Render(SpriteBatch spriteBatch)
