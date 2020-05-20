@@ -16,10 +16,12 @@ namespace Pizza_Puzzle_Game.GameObjects
         private Texture2D m_BracketTex;
 
         private Vector2[] m_SpawnLocations = new Vector2[4]; // These are the spots that the ingredients will drop from
-
-        private Timer timer;
-        private float m_Interval = 750.0f;
+        
+        private double m_TimerInterval = 0.75; // The interval that IngredientObjects "drop" in seconds
+        private double m_ElapsedTime = 0.0;
         private float m_SpeedDivisor = 16.0f; // This divisor is used against the interval field when the player is holding down
+
+        private bool m_SpeedUp = false;
         private bool m_PiecesAreFalling = true; // Tells the object that the ingredients are falling
         private bool m_PlayingSwapAnim = false;
 
@@ -49,12 +51,6 @@ namespace Pizza_Puzzle_Game.GameObjects
             m_IngredientSpriteSheet = content.Load<Texture2D>("toppings");
 
             SpawnIngredients();
-
-            timer = new Timer();
-            timer.Interval = m_Interval;
-            timer.Elapsed += OnDrop;
-            timer.AutoReset = true;
-            timer.Enabled = true;
         }
         #endregion
 
@@ -75,11 +71,30 @@ namespace Pizza_Puzzle_Game.GameObjects
                 // If the player presses/releases Down, then adjust the falling speed
                 if (Keyboard.HasBeenPressed(Keys.Down) || GamePad.HasBeenPressed(Buttons.DPadDown))
                 {
-                    timer.Interval = m_Interval / m_SpeedDivisor;
+                    m_SpeedUp = true;
                 }
                 else if (Keyboard.HasBeenReleased(Keys.Down) || GamePad.HasBeenReleased(Buttons.DPadDown))
                 {
-                    timer.Interval = m_Interval;
+                    m_SpeedUp = false;
+                }
+
+                m_ElapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (!m_SpeedUp)
+                {
+                    if (m_ElapsedTime >= m_TimerInterval)
+                    {
+                        OnDrop();
+                        m_ElapsedTime = 0.0;
+                    }
+                }
+                else
+                {
+                    if (m_ElapsedTime >= m_TimerInterval / m_SpeedDivisor)
+                    {
+                        OnDrop();
+                        m_ElapsedTime = 0.0;
+                    }
                 }
             }
 
@@ -317,10 +332,8 @@ namespace Pizza_Puzzle_Game.GameObjects
         {
 
         }
-        #endregion
-
-        #region Events
-        private void OnDrop(Object o, ElapsedEventArgs e)
+        
+        private void OnDrop()
         {
             Vector2 origin = Position;
             bool nextSpotIsEmpty = false;
