@@ -17,6 +17,20 @@ namespace Pizza_Puzzle_Game.GameObjects
         public bool Rendering { get; set; }
         #endregion
 
+        #region Constructors / Destructors
+        public GameObject()
+        {
+            Game1.m_Updatables.Add(this);
+            Game1.m_Renderables.Add(this);
+        }
+
+        ~GameObject()
+        {
+            Game1.m_Updatables.Remove(this);
+            Game1.m_Renderables.Remove(this);
+        }
+        #endregion
+
         #region Abstract Methods
         public abstract void Update(GameTime gameTime);
         public abstract void Render(SpriteBatch spriteBatch);

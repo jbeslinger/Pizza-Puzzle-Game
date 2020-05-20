@@ -31,15 +31,13 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         #region Constructors / Destructors
         public MaketableObject(Vector2 position, Texture2D sprite, Color shade, ContentManager content, PlayerObject.PlayerNumber playerNumber)
+            : base()
         {
             Position = position;
             Sprite = sprite;
             Shade = shade;
             Active = true;
             Rendering = true;
-
-            Game1.m_Renderables.Add(this);
-            Game1.m_Updatables.Add(this);
 
             // Spawn a new player offset to the position of the maketable
             m_Player = new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, content, playerNumber);
@@ -57,12 +55,6 @@ namespace Pizza_Puzzle_Game.GameObjects
             timer.Elapsed += OnDrop;
             timer.AutoReset = true;
             timer.Enabled = true;
-        }
-
-        ~MaketableObject()
-        {
-            Game1.m_Renderables.Remove(this);
-            Game1.m_Updatables.Remove(this);
         }
         #endregion
 
@@ -141,10 +133,6 @@ namespace Pizza_Puzzle_Game.GameObjects
                         {
                             // Oooh, an empty spot; I'll spawn now
                             IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
-                            lock (Game1.m_Updatables) // I have to lock these lists during this while loop to prevent IndexOutOfRangeException?
-                                Game1.m_Updatables.Add(newIngredient);
-                            lock (Game1.m_Renderables)
-                                Game1.m_Renderables.Add(newIngredient);
 
                             m_IngredientsOnTheBoard[index, 0] = newIngredient;
 
@@ -174,10 +162,6 @@ namespace Pizza_Puzzle_Game.GameObjects
                         {
                             // Oooh, an empty spot; I'll spawn now
                             IngredientObject newIngredient = new IngredientObject(m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
-                            lock (Game1.m_Updatables)
-                                Game1.m_Updatables.Add(newIngredient);
-                            lock (Game1.m_Renderables)
-                                Game1.m_Renderables.Add(newIngredient);
 
                             m_IngredientsOnTheBoard[index, 0] = newIngredient;
 

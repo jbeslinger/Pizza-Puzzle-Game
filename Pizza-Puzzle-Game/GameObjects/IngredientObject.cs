@@ -33,6 +33,7 @@ namespace Pizza_Puzzle_Game.GameObjects
         #region Constructors / Destructors
         /// <param name="spritesheet">The spritesheet that contains all 7 types of ingredients.</param>
         public IngredientObject(Vector2 position, Texture2D spritesheet, Texture2D bracketTex, Color shade, int type, uint columnNumber, uint rowNumber)
+            : base()
         {
             if (type < 0 || type > 6)
             {
@@ -54,12 +55,6 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             ColumnNumber = columnNumber;
             RowNumber = rowNumber;
-        }
-
-        ~IngredientObject()
-        {
-            Game1.m_Renderables.Remove(this);
-            Game1.m_Updatables.Remove(this);
         }
         #endregion
 

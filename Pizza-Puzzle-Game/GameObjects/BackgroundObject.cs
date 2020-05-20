@@ -8,21 +8,13 @@ namespace Pizza_Puzzle_Game.GameObjects
     {
         #region Constructors / Destructors
         public BackgroundObject(Vector2 position, Texture2D sprite, Color shade)
+            : base()
         {
             Position = position;
             Sprite = sprite;
             Shade = shade;
             Active = true;
             Rendering = true;
-
-            Game1.m_Renderables.Add(this);
-            Game1.m_Updatables.Add(this);
-        }
-
-        ~BackgroundObject()
-        {
-            Game1.m_Renderables.Remove(this);
-            Game1.m_Updatables.Remove(this);
         }
         #endregion
 

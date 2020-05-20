@@ -32,6 +32,7 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         #region Constructors / Destructors
         public PlayerObject(Vector2 position, Texture2D sprite, Color shade, ContentManager content, PlayerNumber playerNumber)
+            : base()
         {
             m_PlayerNumber = playerNumber;
 
@@ -46,20 +47,11 @@ namespace Pizza_Puzzle_Game.GameObjects
             m_LeftPos = new Vector2(position.X - (Program.PPU * 3), position.Y);
             m_RightPos = new Vector2(position.X + (Program.PPU * 3), position.Y);
 
-            Game1.m_Renderables.Add(this);
-            Game1.m_Updatables.Add(this);
-
             Texture2D pizzaPanTex = content.Load<Texture2D>("pan");
             m_Pans[0] = new PanObject(Position + Program.ToPixelPos(-5.5f, 0.0f), pizzaPanTex, Color.White);
             m_Pans[1] = new PanObject(Position + Program.ToPixelPos(-2.5f, 0.0f), pizzaPanTex, Color.White);
             m_Pans[2] = new PanObject(Position + Program.ToPixelPos( 0.5f, 0.0f), pizzaPanTex, Color.White);
             m_Pans[3] = new PanObject(Position + Program.ToPixelPos( 3.5f, 0.0f), pizzaPanTex, Color.White);
-        }
-
-        ~PlayerObject()
-        {
-            Game1.m_Renderables.Remove(this);
-            Game1.m_Updatables.Remove(this);
         }
         #endregion
 
