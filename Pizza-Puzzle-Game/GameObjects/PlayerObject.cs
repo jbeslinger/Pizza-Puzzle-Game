@@ -28,6 +28,7 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         #region Properties
         public PlayerPosition PlayerPos { get { return m_PlayerPos; } set { m_PlayerPos = value; } }
+        public uint Score = 0;
         #endregion
 
         #region Constructors / Destructors

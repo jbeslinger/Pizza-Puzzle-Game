@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Timers;
 
 namespace Pizza_Puzzle_Game.GameObjects
 {
@@ -14,6 +13,7 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         private Texture2D m_IngredientSpriteSheet;
         private Texture2D m_BracketTex;
+        private Texture2D m_PoppingTex;
 
         private Vector2[] m_SpawnLocations = new Vector2[4]; // These are the spots that the ingredients will drop from
         
@@ -21,8 +21,8 @@ namespace Pizza_Puzzle_Game.GameObjects
         private double m_ElapsedTime = 0.0;
         private float m_SpeedDivisor = 16.0f; // This divisor is used against the interval field when the player is holding down
 
-        private bool m_SpeedUp = false;
-        private bool m_PiecesAreFalling = true; // Tells the object that the ingredients are falling
+        private bool m_Drop = false; // Flag for when the ingredients should drop
+        private bool m_SpeedUp = false; // Flag for speeding up the drop rate of the ingredients
         private bool m_PlayingSwapAnim = false;
 
         private IngredientObject m_FallingIngredient1, m_FallingIngredient2;
@@ -43,10 +43,14 @@ namespace Pizza_Puzzle_Game.GameObjects
 
             // Spawn a new player offset to the position of the maketable
             m_Player = new PlayerObject(Position + Program.ToPixelPos(7.0f, 19.0f), content.Load<Texture2D>("arrows"), Color.White, content, playerNumber);
-
+            
             m_BracketTex = content.Load<Texture2D>("brackets");
+            m_PoppingTex = content.Load<Texture2D>("pop");
 
-            SetSpawnLocations();
+            m_SpawnLocations[0] = Position + Program.ToPixelPos(1.5f, 1.0f);
+            m_SpawnLocations[1] = Position + Program.ToPixelPos(4.5f, 1.0f);
+            m_SpawnLocations[2] = Position + Program.ToPixelPos(7.5f, 1.0f);
+            m_SpawnLocations[3] = Position + Program.ToPixelPos(10.5f, 1.0f);
 
             m_IngredientSpriteSheet = content.Load<Texture2D>("toppings");
 
@@ -60,47 +64,56 @@ namespace Pizza_Puzzle_Game.GameObjects
             if (!Active)
                 return;
 
+
+            m_ElapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+            if (!m_SpeedUp)
+            {
+                if (m_ElapsedTime >= m_TimerInterval)
+                {
+                    //OnDrop();
+                    m_Drop = true;
+                    m_ElapsedTime = 0.0;
+                }
+            }
+            else
+            {
+                if (m_ElapsedTime >= m_TimerInterval / m_SpeedDivisor)
+                {
+                    //OnDrop();
+                    m_Drop = true;
+                    m_ElapsedTime = 0.0;
+                }
+            }
+
+
             if (m_PlayingSwapAnim)
             {
                 PlaySwapAnimation();
                 return;
             }
 
-            if (m_PiecesAreFalling)
+
+            // If the player presses/releases Down, then adjust the falling speed
+            if (Keyboard.HasBeenPressed(Keys.Down) || GamePad.HasBeenPressed(Buttons.DPadDown))
             {
-                // If the player presses/releases Down, then adjust the falling speed
-                if (Keyboard.HasBeenPressed(Keys.Down) || GamePad.HasBeenPressed(Buttons.DPadDown))
-                {
-                    m_SpeedUp = true;
-                }
-                else if (Keyboard.HasBeenReleased(Keys.Down) || GamePad.HasBeenReleased(Buttons.DPadDown))
-                {
-                    m_SpeedUp = false;
-                }
-
-                m_ElapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (!m_SpeedUp)
-                {
-                    if (m_ElapsedTime >= m_TimerInterval)
-                    {
-                        OnDrop();
-                        m_ElapsedTime = 0.0;
-                    }
-                }
-                else
-                {
-                    if (m_ElapsedTime >= m_TimerInterval / m_SpeedDivisor)
-                    {
-                        OnDrop();
-                        m_ElapsedTime = 0.0;
-                    }
-                }
+                m_SpeedUp = true;
             }
+            else if (Keyboard.HasBeenReleased(Keys.Down) || GamePad.HasBeenReleased(Buttons.DPadDown))
+            {
+                m_SpeedUp = false;
+            }
+
 
             if (Keyboard.HasBeenPressed(Keys.Z) || GamePad.HasBeenPressed(Buttons.X))
             {
                 SwapColumns();
+            }
+
+
+            if (m_Drop)
+            {
+                OnDrop();
+                m_Drop = false;
             }
         }
 
@@ -110,17 +123,6 @@ namespace Pizza_Puzzle_Game.GameObjects
                 return;
             
             spriteBatch.Draw(Sprite, Position, Shade);
-        }
-
-        private void SetSpawnLocations()
-        {
-            // Set spawn locations based on local position
-            Vector2 origin = Position;
-
-            m_SpawnLocations[0] = origin + Program.ToPixelPos(1.5f, 1.0f);
-            m_SpawnLocations[1] = origin + Program.ToPixelPos(4.5f, 1.0f);
-            m_SpawnLocations[2] = origin + Program.ToPixelPos(7.5f, 1.0f);
-            m_SpawnLocations[3] = origin + Program.ToPixelPos(10.5f, 1.0f);
         }
 
         private void SpawnIngredients()
@@ -138,7 +140,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_IngredientsOnTheBoard[index, 0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
-                            IngredientObject newIngredient = new IngredientObject(this, m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
+                            IngredientObject newIngredient = new IngredientObject(this, m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, m_PoppingTex, Color.White, r.Next(0, 7), (uint)index, 0);
 
                             m_IngredientsOnTheBoard[index, 0] = newIngredient;
 
@@ -167,7 +169,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                         if (m_IngredientsOnTheBoard[index, 0] == null)
                         {
                             // Oooh, an empty spot; I'll spawn now
-                            IngredientObject newIngredient = new IngredientObject(this, m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, Color.White, r.Next(0, 7), (uint)index, 0);
+                            IngredientObject newIngredient = new IngredientObject(this, m_SpawnLocations[index], m_IngredientSpriteSheet, m_BracketTex, m_PoppingTex, Color.White, r.Next(0, 7), (uint)index, 0);
 
                             m_IngredientsOnTheBoard[index, 0] = newIngredient;
 
@@ -228,7 +230,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                     }
                     else if (leftIngredient.IsFalling)
                     {
-                        if (m_IngredientsOnTheBoard[rightColumnIndex, rowIndex + 1] != null)
+                        if (rowIndex <= 15 && m_IngredientsOnTheBoard[rightColumnIndex, rowIndex + 1] != null)
                         {
                             leftIngredient.ColumnNumber = (uint)rightColumnIndex;
                             leftIngredient.isSwapping = true;
@@ -252,7 +254,7 @@ namespace Pizza_Puzzle_Game.GameObjects
                     }
                     else if (rightIngredient.IsFalling)
                     {
-                        if (m_IngredientsOnTheBoard[leftColumnIndex, rowIndex + 1] != null)
+                        if (rowIndex <= 15 && m_IngredientsOnTheBoard[leftColumnIndex, rowIndex + 1] != null)
                         {
                             rightIngredient.ColumnNumber = (uint)leftColumnIndex;
                             rightIngredient.isSwapping = true;
@@ -330,9 +332,35 @@ namespace Pizza_Puzzle_Game.GameObjects
 
         private void CheckBoardForMatches()
         {
+            for (int columnIndex = 0; columnIndex < 4; columnIndex++)
+            {
+                // Start from the bottom and go up
+                for (int rowIndex = 16; rowIndex > 1; rowIndex--)
+                {
+                    IngredientObject currentIngredient = m_IngredientsOnTheBoard[columnIndex, rowIndex];
 
+                    if (currentIngredient == null)
+                        continue;
+
+
+                    // Destroy any cheese that doesn't have a pizza base underneath it
+                    if (currentIngredient.Type == IngredientObject.ToppingType.CHEESE_TOPPING && currentIngredient.IsSolidified)
+                    {
+                        if (rowIndex == 16)
+                        {
+                            currentIngredient.isToBeDestroyed = true;
+                            m_IngredientsOnTheBoard[columnIndex, rowIndex] = null;
+                        }
+                        else if (rowIndex <= 14 && m_IngredientsOnTheBoard[columnIndex, rowIndex + 2] != null)
+                        {
+                            currentIngredient.isToBeDestroyed = true;
+                            m_IngredientsOnTheBoard[columnIndex, rowIndex] = null;
+                        }
+                    }
+                }
+            }
         }
-        
+
         private void OnDrop()
         {
             Vector2 origin = Position;
